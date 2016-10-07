@@ -40,5 +40,49 @@ if node in dev_machines:
     MEDIA_URL = '/media/'
     TEMPLATE_DIRS = [os.path.join(MyBlog, 'templates')]
     ALLOWED_HOSTS = ['*']
+else:
+    DEBUG = False
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'blogcx',
+            'USER': 'root',
+            'PASSWORD': '123456',
+            'HOST': 'localhost',
+            'PORT': '3306',
+        }
+    }
+    PROJECT_DIR = '/root/Env/blog/MyBlog'
+    MEDIA_ROOT = '/root/Env/blog/media/'
+    MEDIA_URL = '/media/'
+    STATIC_ROOT = '/root/Env/blog/static/'
+    STATIC_URL = '/static/'
 
+    STATICFILES_DIRS = (
+        os.path.join(PROJECT_DIR, 'static'),
+    )
+
+    TEMPLATE_DIRS = (
+        os.path.join(PROJECT_DIR, 'templates'),
+    )
+
+    ALLOWED_HOSTS = [
+        '*',
+    ]
+
+    # # cache entire site
+    # MIDDLEWARE_CLASSES_ADDITION_FIRST = (
+    #     'django.middleware.cache.UpdateCacheMiddleware',
+    # )
+
+    # MIDDLEWARE_CLASSES_ADDITION_LAST = (
+    #     'django.middleware.cache.FetchFromCacheMiddleware',
+    # )
+
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+    #         'LOCATION': '127.0.0.1:11211',
+    #     }
+    # }
 

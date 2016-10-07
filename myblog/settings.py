@@ -145,5 +145,3 @@ STATIC_ROOT = choose_settings.STATIC_ROOT
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = choose_settings.STATIC_URL
-
-

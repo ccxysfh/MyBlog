@@ -25,4 +25,5 @@ urlpatterns = [
     # admin 
     url(r'^admin/', include(admin.site.urls)),
     # url(r'^referral/', 'my_blog.views.referral')
+    url(r'^flash/',include('computer_science_flash_cards.urls'))
 ]

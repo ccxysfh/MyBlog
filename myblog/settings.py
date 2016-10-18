@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.admindocs',
     'css3template_blog',
     'taggit',
+    'computer_science_flash_cards'
 ]
 
 MIDDLEWARE_CLASSES = [

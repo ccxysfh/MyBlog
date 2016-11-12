@@ -30,7 +30,7 @@ if node in dev_machines:
             'NAME': 'blogcx',
             'USER': 'root',
             'PASSWORD': '123456',
-            'HOST': 'localhost',
+            'HOST': '115.29.113.231',
             'PORT': '3306',
         }
     }
@@ -41,14 +41,14 @@ if node in dev_machines:
     TEMPLATE_DIRS = [os.path.join(MyBlog, 'templates')]
     ALLOWED_HOSTS = ['*']
 else:
-    DEBUG = False
+    DEBUG = True
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'blogcx',
             'USER': 'root',
             'PASSWORD': '123456',
-            'HOST': 'localhost',
+            'HOST': '115.29.113.231',
             'PORT': '3306',
         }
     }

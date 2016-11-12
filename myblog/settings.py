@@ -155,7 +155,8 @@ MEDIA_URL = choose_settings.MEDIA_URL
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
 STATIC_ROOT = choose_settings.STATIC_ROOT
-
+print(STATIC_ROOT)
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = choose_settings.STATIC_URL
+print(STATIC_URL)

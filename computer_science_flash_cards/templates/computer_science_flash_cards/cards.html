@@ -30,6 +30,47 @@
         </form>
     </div>
 
+    <div class="page-header">
+        
+    </div>
+    <div class="btn-group btn-group-md" role="group" aria-label="filters">
+    <a href="/flash/filter_cards/all" class='btn btn-{% if filter_name == "all"%}"primary"{% else %}"default"{% endif %}'>All</a>
+    <a href="/flash/filter_cards/general" class='btn btn-{% if filter_name == "general"%}"primary"{% else %}"default"{% endif %}'>General</a>
+    <a href="/flash/filter_cards/code" class='btn btn-{% if filter_name == "code"%}"primary"{% else %}"default"{% endif %}'>Code</a>
+    <a href="/flash/filter_cards/known" class='btn btn-{% if filter_name == "known"%}"primary"{% else %}"default"{% endif %}'>Known</a>
+    <a href="/flash/filter_cards/unknown" class='btn btn-{% if filter_name == "unknown"%}"primary"{% else %}"default"{% endif %}'>Unknown</a>
+    </div>
+
+    <br />
+    <br />
+
+    <table class="table table-bordered">
+    {% for card in cards %}
+        <tr>
+            <td>
+                <a href="/flash/edit/{{card.0}}" class="btn btn-xs btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+            </td>
+            <td class="cardContent">
+                <h4>
+                    {{ card.2 }}
+                </h4>
+                {% if card.type == 1 %}
+                    <div class='answer'>{{ card.3|safe }}</div>
+                {% else %}
+                    <div class='answer'>{{ card.3|safe }}</pre>
+                {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td>
+                <em>No cards to show.</em>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    
+
 
 
 

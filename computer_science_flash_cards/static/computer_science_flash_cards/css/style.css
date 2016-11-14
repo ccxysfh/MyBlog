@@ -48,3 +48,8 @@ textarea {
 .navbar-right {
   float: right!important;
 }
+
+.cardContent .answer{
+  width:auto;
+  background-color:black; 
+} 

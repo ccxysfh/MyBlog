@@ -17,7 +17,7 @@
           {% if category == "programming" %}
             Programming
           {% elif category == "acg" %}
-            Anime & Manga & Novel & Game
+            animation & summary & machine learning
           {% else %}
             No Category
           {% endif %}
@@ -35,14 +35,14 @@
                 <span class="month">{{ blogpost.pub_date|date:"M"|upper }}</span>
                 <span class="day">{{ blogpost.pub_date.day }}</span>
               </time>
-              <div>
+              <footer>
                 <span class="tags">
                   posted in
                   {% for tag in blogpost.tags.all %}
                     {{ tag.name }},
                   {% endfor %}
                 </span>
-              </div>
+              </footer>
             </article>
           {% endfor %}
         {% endfor %}

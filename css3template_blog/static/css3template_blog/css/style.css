@@ -189,12 +189,13 @@ body>div>header {
   background: #404040;
   height: 200px;
   border-bottom: 1px solid #FFF;
+  background: transparent url(../images/logo.jpg) no-repeat right;
 }
 
 #logo {
   width: 1000px;
   height: 200px;
-  background: transparent url(../images/logo.png) no-repeat right;
+  /*background: transparent url(../images/logo.jpg) no-repeat right;*/
   color: #888;
   padding: 0;
 }
@@ -228,7 +229,7 @@ body>div>header {
 #logo_text h2 { 
   font-size: 150%;
   padding: 0 0 0 0;
-  color: #A8AA94;
+  color: #fff;
 }
 
 nav { 
@@ -353,7 +354,7 @@ footer#site-footer {
   width: 100%;
   font-family: 'lucida sans', sans-serif;
   font-size: 90%;
-  height: 60px;
+  height: 90px;
   padding: 20px 0 5px 0;
   text-align: center; 
   background: #404040 url(../images/footer.png) repeat-x;

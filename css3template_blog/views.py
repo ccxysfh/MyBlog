@@ -6,8 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 
 from .models import BlogPost
-
-exclude_posts = ("about", "projects", "talks")
+exclude_posts = ("shares",)
 
 
 # Create your views here.
@@ -67,11 +66,11 @@ def projects(request):
     return render(request, 'css3template_blog/projects.html', args)
 
 
-def talks(request):
+def shares(request):
     # use markdown to show talks, could be changed if need better formatting
-    the_talks_post = get_object_or_404(BlogPost, title="talks")
-    args = {"talks": the_talks_post}
-    return render(request, 'css3template_blog/talks.html', args)
+    the_talks_post = get_object_or_404(BlogPost, title="shares")
+    args = {"shares": the_talks_post}
+    return render(request, 'css3template_blog/share.html', args)
 
 
 def contact(request):
@@ -92,3 +91,8 @@ def article(request, freshness):
             raise Http404
     else:
         return redirect('/')
+
+def share(request):
+    the_talks_post = get_object_or_404(BlogPost, title="talks")
+    args = {"talks": the_talks_post}
+    return render(request, 'css3two_blog/talks.html', args)

@@ -8,6 +8,6 @@ urlpatterns = patterns(
     url('^archive/$', views.archive),
     url('^about/$', views.about),
     url('^projects/$', views.projects),
-    url('^talks/$', views.talks),
+    url('^shares/$', views.shares),
     url('^article/(?P<freshness>.*)/$', views.article),  
 )

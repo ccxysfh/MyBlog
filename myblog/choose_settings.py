@@ -22,7 +22,7 @@ if node in dev_machines:
     MyBlog = os.path.dirname(os.path.dirname(__file__))
     # project dir, contains static and media folder under DEV environment
     PROJECT_DIR = os.path.dirname(MyBlog)
-    DEBUG = True
+    DEBUG =  True
     DATABASES = {
         'default': {
             # 'ENGINE': 'django.db.backends.sqlite3',

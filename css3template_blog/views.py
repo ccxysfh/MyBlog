@@ -91,8 +91,3 @@ def article(request, freshness):
             raise Http404
     else:
         return redirect('/')
-
-def share(request):
-    the_talks_post = get_object_or_404(BlogPost, title="talks")
-    args = {"talks": the_talks_post}
-    return render(request, 'css3two_blog/talks.html', args)

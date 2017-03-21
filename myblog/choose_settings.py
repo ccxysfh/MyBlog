@@ -15,7 +15,7 @@ import platform
 
 node = platform.node()
 print(node)
-dev_machines = ('cheng-cx', 'cheng-cx.local','localhost')
+dev_machines = ('cheng-cx', 'cheng-cx.local','localhost','study.centos.changxin')
 
 if node in dev_machines:
     # folder My_Blog
@@ -41,7 +41,9 @@ if node in dev_machines:
     MEDIA_URL = '/media/'
     TEMPLATE_DIRS = [os.path.join(MyBlog, 'templates')]
     ALLOWED_HOSTS = ['*']
+    print('debug')
 else:
+    print('deploy')
     DEBUG = False
     DATABASES = {
         'default': {
@@ -53,10 +55,10 @@ else:
             'PORT': '3306',
         }
     }
-    PROJECT_DIR = '/root/Env/blog/MyBlog'
-    MEDIA_ROOT = '/root/Env/blog/media/'
+    PROJECT_DIR = '/home/changxin/deploy/blog/MyBlog'
+    MEDIA_ROOT = '/home/changxin/deploy/blog/media/'
     MEDIA_URL = '/media/'
-    STATIC_ROOT = '/root/Env/blog/static/'
+    STATIC_ROOT = '/home/changxin/deploy/blog/static/'
     STATIC_URL = '/static/'
 
     STATICFILES_DIRS = (

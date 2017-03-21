@@ -1,4 +1,4 @@
-django
+django==1.8
 requests
 django-contact-form
 unidecode
@@ -6,3 +6,6 @@ Pillow
 uwsgi
 uwsgidecorators
 psycopg2
+pymysql
+django-taggit
+markdown2

@@ -1,0 +1,30 @@
+nav {
+  /*background: transparent url(../images/menubar.png) repeat;*/
+}
+
+a:link {
+  text-decoration: none;
+}
+
+.fixed-top {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+}
+
+.content {
+    margin-top: 160px;
+}
+
+.away-top {
+    margin-top: 200px;
+}
+
+.author-profile .author-image {
+    z-index: 1130;
+}
+.author-profile .author-title {
+    z-index: 1130;
+}

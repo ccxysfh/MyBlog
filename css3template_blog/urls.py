@@ -7,4 +7,5 @@ urlpatterns = patterns(
     url(r'^(?P<slug>[-\w\d]+),(?P<post_id>\d+)/$', views.blogpost),
     url('^archive/$', views.archive),
     url('^shares/$', views.shares),
+    url('^profile/$',views.profile),
 )

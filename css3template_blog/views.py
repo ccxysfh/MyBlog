@@ -10,9 +10,10 @@ exclude_posts = ("shares",)
 
 
 # Create your views here.
-def home(request, page=''):
+def home(request,page_html='newlayout/newindex.html',page=''):
     args = dict()
     args['blogposts'] = BlogPost.objects.exclude(title__in=exclude_posts)
+    args['blogpostsnum'] = len(args['blogposts'])
     max_page = ceil(len(args['blogposts']) / 3)
     if page and int(page) < 2:  # /0, /1 -> /
         return redirect("/")
@@ -23,12 +24,15 @@ def home(request, page=''):
         args['newer_page'] = page - 1 if page > 1 else None
         # as template slice filter, syntax: list|slice:"start:end"
         args['sl'] = str(3 * (page - 1)) + ':' + str(3 * (page - 1) + 3)
-        return render(request, 'css3template_blog/index.html', args)
+        args['max_page'] = max_page
+        return render(request, 'css3template_blog/' + page_html, args)
 
+def profile(request):
+    return home(request,page_html='newlayout/profile.html')
 
 def blogpost(request, slug, post_id):
     args = {'blogpost': get_object_or_404(BlogPost, pk=post_id)}
-    return render(request, 'css3template_blog/blogpost.html', args)
+    return render(request, 'css3template_blog/newlayout/newblogpost.html', args)
 
 
 def archive(request):
@@ -50,7 +54,7 @@ def archive(request):
         ('nc', get_sorted_posts(category="nc")),  # no category
     ]
 
-    return render(request, 'css3template_blog/archive.html', args)
+    return render(request, 'css3template_blog/newlayout/newarchive.html', args)
 
 
 def about(request):
@@ -70,7 +74,7 @@ def shares(request):
     # use markdown to show talks, could be changed if need better formatting
     the_talks_post = get_object_or_404(BlogPost, title="shares")
     args = {"shares": the_talks_post}
-    return render(request, 'css3template_blog/share.html', args)
+    return render(request, 'css3template_blog/newlayout/newshare.html', args)
 
 
 def contact(request):

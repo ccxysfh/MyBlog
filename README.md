@@ -1,6 +1,6 @@
 # myblog 
  
-##Django+MySQL+uWSGI搭建个人博客  
+**Django+MySQL+uWSGI搭建个人博客**
     
 
 网站界面已更新至第二版，一次偶然的机会看到<a href="http://blog.andrebarbosa.co/" target="_blank">**André Barbosa**</a>的博客，这种风格深深的打动了我，看到它的第一眼，我就意识到这正是我一直在找寻的风格，向André Barbosa致以我最诚挚的谢意。

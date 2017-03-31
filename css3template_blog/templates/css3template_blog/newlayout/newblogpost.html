@@ -10,6 +10,9 @@
 {% autoescape off %}
 <article class="post tag-postgres">
   <!-- <header> -->
+  {% if current_page %}
+    <a class="next newer-posts" href="/{{ current_page }}/">← back</a>
+  {% endif %}
     <p class="meta">
       <time pubdate="{{ blogpost.pub_date }}" data-updated="{{ blogpost.last_edit_date }}">
         {{ blogpost.pub_date|date:'M'|upper }}

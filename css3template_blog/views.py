@@ -31,7 +31,12 @@ def profile(request):
     return home(request,page_html='newlayout/profile.html')
 
 def blogpost(request, slug, post_id):
+    try:
+        current_page = request.GET["current_page"]
+    except:
+        current_page = None
     args = {'blogpost': get_object_or_404(BlogPost, pk=post_id)}
+    args['current_page'] = current_page
     return render(request, 'css3template_blog/newlayout/newblogpost.html', args)
 
 

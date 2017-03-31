@@ -8,11 +8,9 @@
 
 {% block content %}
 {% autoescape off %}
+
 <article class="post tag-postgres">
   <!-- <header> -->
-  {% if current_page %}
-    <a class="next newer-posts" href="/{{ current_page }}/">← back</a>
-  {% endif %}
     <p class="meta">
       <time pubdate="{{ blogpost.pub_date }}" data-updated="{{ blogpost.last_edit_date }}">
         {{ blogpost.pub_date|date:'M'|upper }}
@@ -36,10 +34,12 @@
       <time class="post-date" pubdate="{{ blogpost.pub_date }}" data-updated="{{ blogpost.last_edit_date }}">{{ blogpost.pub_date|date:'M'|upper }}
       {{ blogpost.pub_date|date:"dS"|upper }}, {{ blogpost.pub_date.year }}</time>
   </footer>
-  {% if current_page %}
-    <a class="next newer-posts" href="/{{ current_page }}/">← back</a>
-  {% endif %}
 </article>
+{% if current_page %}
+<nav class="pagination" role="navigation">
+  <a class="next newer-posts" href="/{{ current_page }}/">← back</a>
+</nav>
+{% endif %}
 {% endautoescape %}
 
 {% endblock content %}

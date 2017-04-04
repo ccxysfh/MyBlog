@@ -1,0 +1,90 @@
+{% extends 'css3template_blog/newlayout/base.html' %}
+{% load static %}
+
+{% block content %}
+  {% if page > 1%}
+  <nav class="pagination" role="navigation">
+
+    {% if tag %}
+      {% if newer_page %}
+        <a class="next newer-posts" href="/tag/{{ tag }},{{ newer_page }}/">← Newer</a>
+      {% endif %}
+    {% else %}
+      {% if newer_page %}
+        <a class="next newer-posts" href="/{{ newer_page }}/">← Newer</a>
+      {% endif %}
+    {% endif %}
+
+      <span class="page-number">Page {{ page }} of {{ max_page }}</span>
+
+    {% if tag %}
+      {% if prev_page %}
+        <a class="prev older-posts" href="/tag/{{ tag }},{{ prev_page }}/">Older →</a>
+      {% endif %}
+    {% else %}
+      {% if prev_page %}
+        <a class="prev older-posts" href="/{{ prev_page }}/">Older →</a>
+      {% endif %}
+    {% endif %}
+
+  </nav>
+  {% endif %}
+{% for blogpost in blogposts|slice:sl %}
+    {% autoescape off %}
+      <article class="post tag-postgres">
+        <!-- <header> -->
+          <p class="meta">
+            <time pubdate="{{ blogpost.pub_date }}" data-updated="{{ blogpost.last_edit_date }}">
+              {{ blogpost.pub_date|date:'M'|upper }}
+              {{ blogpost.pub_date|date:"dS"|upper }}, {{ blogpost.pub_date.year }}
+            </time>
+          </p>
+          <header class="post-header title-link">
+            {% if tag %}
+              <h2 class="post-title"><a href="{{ blogpost.get_absolute_url }}?current_page={{ page }}&tag={{ tag }}"><b>{{ blogpost.title }}</b></a></h2>
+            {% else %}
+              <h2 class="post-title"><a href="{{ blogpost.get_absolute_url }}?current_page={{ page }}"><b>{{ blogpost.title }}</b></a></h2>
+            {% endif%}
+          </header>
+        <!-- </header> -->
+        <section class="post-excerpt">
+            {{ blogpost.display_html }}
+        </section>
+        <footer class="post-meta">
+            <img class="author-thumb" src="{% static 'css3template_blog/assets/images/ccx.jpeg' %}" alt="Changxin Cheng" nopin="nopin" />
+            <a href="/blog/profile">Changxin Cheng</a>
+             <!-- on <a href="/tag/postgres/">postgres</a> one or more-->
+             posted in
+             {% for tag in blogpost.tags.all %}
+              <a href="/tag/{{ tag.name }},">{{ tag.name }}</a>,
+             {% endfor %}
+            <time class="post-date" pubdate="{{ blogpost.pub_date }}" data-updated="{{ blogpost.last_edit_date }}">{{ blogpost.pub_date|date:'M'|upper }}
+            {{ blogpost.pub_date|date:"dS"|upper }}, {{ blogpost.pub_date.year }}</time>
+        </footer>
+      </article>
+    {% endautoescape %}
+{% endfor %}
+  <nav class="pagination" role="navigation">
+    {% if tag %}
+      {% if newer_page %}
+        <a class="next newer-posts" href="/tag/{{ tag }},{{ newer_page }}/">← Newer</a>
+      {% endif %}
+    {% else %}
+      {% if newer_page %}
+        <a class="next newer-posts" href="/{{ newer_page }}/">← Newer</a>
+      {% endif %}
+    {% endif %}
+
+    <span class="page-number">Page {{ page }} of {{ max_page }}</span>
+
+    {% if tag %}
+      {% if prev_page %}
+        <a class="prev older-posts" href="/tag/{{ tag }},{{ prev_page }}/">Older →</a>
+      {% endif %}
+    {% else %}
+      {% if prev_page %}
+        <a class="prev older-posts" href="/{{ prev_page }}/">Older →</a>
+      {% endif %}
+    {% endif %}
+  </nav>
+{% endblock content %}

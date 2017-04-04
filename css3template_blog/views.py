@@ -84,7 +84,7 @@ def archive(request):
         ('nc', get_sorted_posts(category="nc")),  # no category
     ]
 
-    return render(request, 'css3template_blog/newlayout/newarchive.html', args)
+    return render(request, 'css3template_blog/newlayout/archive.html', args)
 
 
 def about(request):

@@ -45,7 +45,11 @@ class BlogPost(models.Model):
     CATEGORY_CHOICES = (
         ('programming', 'Programming'),
         ('acg', 'animation & summary & machine learning'),
+        ('ani', 'Animation'),
+        ('ml', 'Machine Learning'),
+        ('su', 'Summary'),
         ('nc', 'No Category'),
+        ('oth', 'Others'),
     )
 
     title = models.CharField(max_length=150)

@@ -80,10 +80,11 @@ def archive(request):
 
     args['data'] = [
         ('programming', get_sorted_posts(category="programming")),
-        ('acg', get_sorted_posts(category="acg")),
-        ('nc', get_sorted_posts(category="nc")),  # no category
+        ('ani', get_sorted_posts(category="ani")),
+        ('ml', get_sorted_posts(category="ml")),
+        ('su', get_sorted_posts(category="su")),
+        ('oth', get_sorted_posts(category="oth")),
     ]
-
     return render(request, 'css3template_blog/newlayout/archive.html', args)
 
 

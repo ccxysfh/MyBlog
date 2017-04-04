@@ -18,7 +18,11 @@
       </time>
     </p>
     <header class="post-header title-link">
-        <h2 class="post-title"><a href="{{ blogpost.get_absolute_url }}"><b>{{ blogpost.title }}</b></a></h2>
+      {% if tag %}
+        <h2 class="post-title"><a href="{{ blogpost.get_absolute_url }}?current_page={{ current_page }}&tag={{ tag }}"><b>{{ blogpost.title }}</b></a></h2>
+      {% else %}
+        <h2 class="post-title"><a href="{{ blogpost.get_absolute_url }}?current_page={{ current_page }}"><b>{{ blogpost.title }}</b></a></h2>
+      {% endif %}
     </header>
   <!-- </header> -->
   <section class="post-excerpt">
@@ -29,7 +33,7 @@
       <a href="/blog/profile">Changxin Cheng</a>
       posted in
       {% for tag in blogpost.tags.all %}
-        {{ tag.name }},
+        <a href="/tag/{{ tag.name }},">{{ tag.name }}</a>,
       {% endfor %}
       <time class="post-date" pubdate="{{ blogpost.pub_date }}" data-updated="{{ blogpost.last_edit_date }}">{{ blogpost.pub_date|date:'M'|upper }}
       {{ blogpost.pub_date|date:"dS"|upper }}, {{ blogpost.pub_date.year }}</time>
@@ -37,7 +41,11 @@
 </article>
 {% if current_page %}
 <nav class="pagination" role="navigation">
-  <a class="next newer-posts" href="/{{ current_page }}/">← back</a>
+  {% if tag%}
+   <a class="next newer-posts" href="/tag/{{ tag }},{{ current_page }}/">← back</a>{{tag}}
+  {% else %}
+    <a class="next newer-posts" href="/{{ current_page }}/">← back</a>
+  {% endif%}
 </nav>
 {% endif %}
 {% endautoescape %}

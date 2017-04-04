@@ -4,13 +4,15 @@ from os.path import join
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
+from django.core.urlresolvers import reverse
 
 from .models import BlogPost
+
 exclude_posts = ("shares",)
 
 
 # Create your views here.
-def home(request,page_html='newlayout/newindex.html',page=''):
+def home(request,page_html='newlayout/index.html',page=''):
     args = dict()
     args['blogposts'] = BlogPost.objects.exclude(title__in=exclude_posts)
     args['blogpostsnum'] = len(args['blogposts'])
@@ -35,10 +37,33 @@ def blogpost(request, slug, post_id):
         current_page = request.GET["current_page"]
     except:
         current_page = None
+    try:
+        tag = request.GET["tag"]
+    except:
+        tag = None
     args = {'blogpost': get_object_or_404(BlogPost, pk=post_id)}
     args['current_page'] = current_page
-    return render(request, 'css3template_blog/newlayout/newblogpost.html', args)
+    args['tag'] = tag
+    return render(request, 'css3template_blog/newlayout/blogpost.html', args)
 
+def tagdisplay(request, tag, page=''):
+    args = dict()
+    print(tag)
+    args['tag'] = tag
+    args['blogposts'] = BlogPost.objects.filter(tags__name__in=[tag,])
+    args['blogpostsnum'] = len(args['blogposts'])
+    max_page = ceil(len(args['blogposts']) / 3)
+    if (page and int(page) < 2) or (page and int(page) > max_page):  # /0, /1 -> /
+        return redirect(reverse('tagdisplay',kwargs={'tag':tag}))
+    else:
+        page = int(page) if (page and int(page) > 0) else 1
+        args['page'] = page
+        args['prev_page'] = page + 1 if page < max_page else None
+        args['newer_page'] = page - 1 if page > 1 else None
+        # as template slice filter, syntax: list|slice:"start:end"
+        args['sl'] = str(3 * (page - 1)) + ':' + str(3 * (page - 1) + 3)
+        args['max_page'] = max_page
+    return render(request, 'css3template_blog/newlayout/tagdisplay.html', args)
 
 def archive(request):
     args = dict()
@@ -79,7 +104,7 @@ def shares(request):
     # use markdown to show talks, could be changed if need better formatting
     the_talks_post = get_object_or_404(BlogPost, title="shares")
     args = {"shares": the_talks_post}
-    return render(request, 'css3template_blog/newlayout/newshare.html', args)
+    return render(request, 'css3template_blog/newlayout/share.html', args)
 
 
 def contact(request):

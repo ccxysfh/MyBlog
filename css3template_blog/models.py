@@ -53,7 +53,7 @@ class BlogPost(models.Model):
     md_file = models.FileField(upload_to=get_upload_md_name, blank=True)  # uploaded md file
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     last_edit_date = models.DateTimeField('last edited', auto_now=True)
-    slug = models.SlugField(max_length=200, blank=True)
+    slug = models.SlugField(max_length=200, blank=True) #The post slug is the user friendly and URL valid name of a post.
     html_file = models.FileField(upload_to=get_html_name, blank=True)    # generated html file
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
     description = models.TextField(blank=True)
@@ -107,4 +107,3 @@ class BlogPostImage(models.Model):
 
     blogpost = models.ForeignKey(BlogPost, related_name='images')
     image = models.ImageField(upload_to=get_upload_img_name)
-

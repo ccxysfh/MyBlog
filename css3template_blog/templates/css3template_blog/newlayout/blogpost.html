@@ -42,7 +42,7 @@
 {% if current_page %}
 <nav class="pagination" role="navigation">
   {% if tag%}
-   <a class="next newer-posts" href="/tag/{{ tag }},{{ current_page }}/">← back</a>{{tag}}
+    <a class="next newer-posts" href="/tag/{{ tag }},{{ current_page }}/">← back</a>{{tag}}
   {% else %}
     <a class="next newer-posts" href="/{{ current_page }}/">← back</a>
   {% endif%}

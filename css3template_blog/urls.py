@@ -1,11 +1,10 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from . import views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url('^$', views.home),
-    url(r'^(?P<slug>[-\w\d]+),(?P<post_id>\d+)/$', views.blogpost),
+    url(r'^(?P<slug>[-\w\d]+),(?P<post_id>\d+)/$', views.blogpost, name='blogpost_slug_id'),
     url('^archive/$', views.archive),
     url('^shares/$', views.shares),
     url('^profile/$',views.profile),
-)
+]

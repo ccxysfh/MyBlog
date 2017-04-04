@@ -87,7 +87,7 @@ class BlogPost(models.Model):
             return f.read()
 
     def get_absolute_url(self):
-        return reverse('css3template_blog.views.blogpost',
+        return reverse('blogpost_slug_id',
                        kwargs={'slug': self.slug, 'post_id': self.id})
 
 

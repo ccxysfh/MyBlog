@@ -79,7 +79,10 @@ class BlogPost(models.Model):
             self.body = self.md_file.read()
 
         html = markdown2.markdown(self.body,
-                                  extras=["fenced-code-blocks", "tables"])
+                                  extras=["fenced-code-blocks", "tables",'toc'])
+        print(html)
+        html = html.toc_html + html
+        print(html)
         self.html_file.save(self.title + '.html',
                             ContentFile(html.encode('utf-8')), save=False)
         self.html_file.close()

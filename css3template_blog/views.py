@@ -126,3 +126,11 @@ def article(request, freshness):
             raise Http404
     else:
         return redirect('/')
+
+def happy_birthday(request):
+    args = dict()
+    tag = "HappyBirthday"
+    args['tag'] = tag
+    args['blogposts'] = BlogPost.objects.filter(tags__name__in=[tag, ])
+    print(args['blogposts'])
+    return render(request, 'css3template_blog/newlayout/birthday.html', args)

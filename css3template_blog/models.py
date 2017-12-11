@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from django.db import models
+from django.db import models, connection, connections, transaction
 from django.utils import timezone
 
 # for slug, get_absolute_url
@@ -116,3 +116,84 @@ class BlogPostImage(models.Model):
 
     blogpost = models.ForeignKey(BlogPost, related_name='images')
     image = models.ImageField(upload_to=get_upload_img_name)
+
+class BaseManage(models.Manager):
+    # 根据传入属性dict生成增删改查的sql，使用raw方法进行查询，针对绑定了model的情况
+    # 如果没有绑定model，也可以使用direct_xxxx_query_sqlVO传入得到的sqlVO进行查询
+    __cursor = None
+
+    def __init__(self):
+        self.__cursor = connection.cursor()
+
+    # TODO 提供真正的事务操作方法
+    def identify_db(self, db_name):
+        try:
+            self.__cursor = connections[db_name].cursor()
+        except Exception as e:
+            print("ERROR:[", e, ']')
+    # 配置一个函数文档字符串模版吧 FIXED defm + tab
+    def execute_single(self, sqlVO):
+        """数据库查询的增删改底层操作
+            sqlVO: a dict which contains 'sql', 'vars'
+        :return: True if execute success or False if not.
+
+        """
+        try:
+            self.__cursor.execute(sqlVO.get('sql'), sqlVO.get('vars', None))
+        except Exception as e:
+            print('Failed to execute SQL[%s]\n' % sqlVO.get('sql'))
+            print("ERROR:[", e, ']')
+            raise Exception(e) # 上层捕获异常，回滚事务
+        else: # 若无异常执行else，该条语句返回True，不提交事务，最后上层调用提交事务
+            return True
+
+    def select_single(self, sqlVO):
+        try:
+            self.__cursor.execute(sqlVO.get('sql'), sqlVO.get('vars', None))
+            return self.dictfetchall(self.__cursor)
+        except Exception as e:
+            print('Failed to execute SQL[%s]\n' % sqlVO.get('sql'))
+            print("ERROR:[", e, ']')
+            raise Exception(e)
+
+    def select_single_tuple(self, sqlVO):
+        try:
+            self.__cursor.execute(sqlVO.get('sql'), sqlVO.get('vars', None))
+            return self.__cursor.fetchall()
+        except Exception as e:
+            print('Failed to execute SQL[%s]\n' % sqlVO.get('sql'))
+            raise Exception(e)
+
+def transaction_decorator(f):
+
+    def wrapper(*args):
+        bsm = None
+        for arg in args:
+            if isinstance(arg, BaseManage):
+                bsm = arg
+                break
+        try:
+            with transaction.atomic():
+                f(bsm)
+        except Exception as e:
+            print("transaction error！")
+            print('ERROR:[', e, ']')
+
+    return wrapper
+
+class TaekwondoPoomsae(models.Model):
+    # TODO 品势字段设计，
+    chapter = models.CharField(max_length=150)#一至八、高丽、金刚、太白
+    action = models.CharField(max_length=150)# 对应动作在每章的序号
+    sequence = models.IntegerField()
+    actionsum = models.IntegerField()
+    remark = models.CharField(max_length=750, blank=True)
+
+class PoomsaeInfo(models.Model):
+    chapter = models.CharField(max_length=150)  # 一至八、高丽、金刚、太白
+    actionsum = models.IntegerField()
+    leg = models.CharField(max_length=150) # 腿法
+    foot = models.CharField(max_length=150) # 步法
+    defence = models.CharField(max_length=150) # 防守动作
+    attack = models.CharField(max_length=150) # 攻击动作
+    meaning = models.CharField(max_length=750, blank=True) # 含义

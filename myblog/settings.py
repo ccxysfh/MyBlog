@@ -13,44 +13,18 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 from . import choose_settings
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = ')9x^^&nx-a$4np!fck5mc0b2%ujr61y02u3n@ss)10hu6yk9cj'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = choose_settings.DEBUG
-TEMPLATE_DEBUG = DEBUG
 
+"""
+more
+"""
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = choose_settings.ALLOWED_HOSTS
 
-ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
-    ('maksim', 'ccxysfh1993@gmail.com'),
-)
-
-MANAGERS = ADMINS
-
-# Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-DATABASES = choose_settings.DATABASES
-
-# List of finder classes that know how to find static files in
-# various locations.
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
-)
-
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    # 'django.template.loaders.eggs.Loader',
-)
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ')9x^^&nx-a$4np!fck5mc0b2%ujr61y02u3n@ss)10hu6yk9cj'
-TEMPLATE_DIRS = choose_settings.TEMPLATE_DIRS
 # Application definition
 
 INSTALLED_APPS = [
@@ -82,8 +56,8 @@ ROOT_URLCONF = 'myblog.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [], # Directories where the engine should look for template source files, in search order.
+        'APP_DIRS': True, # load templates from the templates subdirectory inside each installed application
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -97,8 +71,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myblog.wsgi.application'
 
+# Database
+# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-
+DATABASES = choose_settings.DATABASES
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -118,18 +94,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+"""
+Internationalization
+https://docs.djangoproject.com/en/1.10/topics/i18n/
+"""
+# Language code for this installation. All choices can be found here:
+# http://www.i18nguy.com/unicode/language-identifiers.html
+LANGUAGE_CODE = 'en-us'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
 TIME_ZONE = 'Asia/Shanghai'
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
-
-SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -142,6 +119,19 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.10/howto/static-files/
+
+# Absolute path to the directory static files should be collected to.
+# Don't put anything in this directory yourself; store your static files
+# in apps' "static/" subdirectories and in STATICFILES_DIRS.
+# Example: "/var/www/example.com/static/"
+STATIC_ROOT = choose_settings.STATIC_ROOT
+
+# URL prefix for static files.
+# Example: "http://example.com/static/", "http://static.example.com/"
+STATIC_URL = choose_settings.STATIC_URL
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
 MEDIA_ROOT = choose_settings.MEDIA_ROOT
@@ -151,13 +141,78 @@ MEDIA_ROOT = choose_settings.MEDIA_ROOT
 # Examples: "http://example.com/media/", "http://media.example.com/"
 MEDIA_URL = choose_settings.MEDIA_URL
 
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/var/www/example.com/static/"
-STATIC_ROOT = choose_settings.STATIC_ROOT
-print(STATIC_ROOT)
-# URL prefix for static files.
-# Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = choose_settings.STATIC_URL
-print(STATIC_URL)
+# A list of all the people who get code error notifications when DEBUG=False and a view raises an exception.
+ADMINS = [
+    # ('Your Name', 'your_email@example.com'),
+    ('ChangxinCheng', 'ccxysfh1993@gmail.com')
+]
+
+# A list in the same format as ADMINS that specifies who should get broken link notifications
+# when BrokenLinkEmailsMiddleware is enabled.
+MANAGERS = ADMINS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# TEMPLATE_DEBUG = DEBUG
+#
+#
+#
+
+#
+#
+#
+# # List of finder classes that know how to find static files in
+# # various locations.
+# STATICFILES_FINDERS = (
+#     'django.contrib.staticfiles.finders.FileSystemFinder',
+#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
+# )
+#
+# TEMPLATE_LOADERS = (
+#     'django.template.loaders.filesystem.Loader',
+#     'django.template.loaders.app_directories.Loader',
+#     # 'django.template.loaders.eggs.Loader',
+# )
+#
+# # Quick-start development settings - unsuitable for production
+# # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
+#
+#
+# TEMPLATE_DIRS = choose_settings.TEMPLATE_DIRS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SITE_ID = 1

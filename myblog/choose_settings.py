@@ -18,20 +18,19 @@ print(node)
 dev_machines = ('cheng-cx', 'cheng-cx.local','localhost','study.centos.changxin')
 
 if node in dev_machines:
-    # folder My_Blog
-    MyBlog = os.path.dirname(os.path.dirname(__file__))
-    # project dir, contains static and media folder under DEV environment
-    PROJECT_DIR = os.path.dirname(MyBlog)
+    print('Debug')
+    # folder BASE_DIR or project myblog dir which is the same as app folder.
+    myblog = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # project dir, contains static and media folder under deploy environment
+    PROJECT_DIR = os.path.dirname(myblog)
+    print('MyBlog:',myblog,'\nPROJECT_DIR:', PROJECT_DIR)
     DEBUG =  True
     DATABASES = {
         'default': {
-            # 'ENGINE': 'django.db.backends.sqlite3',
-            # 'NAME': os.path.join(My_Blog, 'db.sqlite3'),
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'blogcx',
             'USER': 'root',
             'PASSWORD': '123456',
-            'HOST': 'localhost',
             'PORT': '3306',
         }
     }
@@ -39,9 +38,8 @@ if node in dev_machines:
     STATIC_URL = '/static/'
     MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
     MEDIA_URL = '/media/'
-    TEMPLATE_DIRS = [os.path.join(MyBlog, 'templates')]
+    TEMPLATE_DIRS = [os.path.join(myblog, 'templates')]
     ALLOWED_HOSTS = ['*']
-    print('debug')
 else:
     print('deploy')
     DEBUG = False
@@ -72,20 +70,3 @@ else:
     ALLOWED_HOSTS = [
         '*',
     ]
-
-    # # cache entire site
-    # MIDDLEWARE_CLASSES_ADDITION_FIRST = (
-    #     'django.middleware.cache.UpdateCacheMiddleware',
-    # )
-
-    # MIDDLEWARE_CLASSES_ADDITION_LAST = (
-    #     'django.middleware.cache.FetchFromCacheMiddleware',
-    # )
-
-    # CACHES = {
-    #     'default': {
-    #         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-    #         'LOCATION': '127.0.0.1:11211',
-    #     }
-    # }
-

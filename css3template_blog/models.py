@@ -43,11 +43,11 @@ class BlogPost(models.Model):
         return upload_to
 
     CATEGORY_CHOICES = (
+        ('ml', 'Machine Learning'),
+        ('ani', 'Animation'),
+        ('su', 'Summary'),
         ('programming', 'Programming'),
         ('acg', 'animation & summary & machine learning'),
-        ('ani', 'Animation'),
-        ('ml', 'Machine Learning'),
-        ('su', 'Summary'),
         ('nc', 'No Category'),
         ('oth', 'Others'),
     )

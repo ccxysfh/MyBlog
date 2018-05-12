@@ -79,9 +79,9 @@ def archive(request):
         return posts_by_year
 
     args['data'] = [
-        ('programming', get_sorted_posts(category="programming")),
-        ('ani', get_sorted_posts(category="ani")),
         ('ml', get_sorted_posts(category="ml")),
+        ('ani', get_sorted_posts(category="ani")),
+        ('programming', get_sorted_posts(category="programming")),
         ('su', get_sorted_posts(category="su")),
         ('oth', get_sorted_posts(category="oth")),
     ]

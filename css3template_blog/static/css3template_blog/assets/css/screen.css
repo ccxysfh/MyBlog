@@ -682,7 +682,7 @@ body.nav-opened .nav {
     width: 20px;
     height: 1px;
     background: rgb(150,150,150);
-    top: 15px;
+    top: 25px;
     -webkit-transition: background 0.15s ease;
             transition: background 0.15s ease;
 }
@@ -721,6 +721,7 @@ body.nav-opened .nav {
     color: #B8B8B8;
     content: counter(item, lower-roman);
     counter-increment: item;
+    margin-top: 12px;
 }
 .nav li {
     margin: 0;

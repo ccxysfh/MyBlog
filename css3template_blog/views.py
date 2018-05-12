@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 
 from .models import BlogPost
 
-exclude_posts = ("shares",)
+exclude_posts = ("shares","HappyBirthday",)
 
 
 # Create your views here.

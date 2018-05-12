@@ -45,6 +45,7 @@
         <li class="nav-home" role="presentation"><a href="/blog">Home</a></li>
         <li class="nav-home" role="presentation"><a href="/blog/archive">archive</a></li>
         <li class="nav-home" role="presentation"><a href="/blog/shares">shares</a></li>
+        <li class="nav-home" role="presentation"><a href="/blog/happy_birthday_to_my_princess_huyao/">princess</a></li>
     </ul>
     <a class="subscribe-button icon-github" href="https://github.com/ccxysfh" target="_blank">Github</a>
 </div>
@@ -83,6 +84,20 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script type="text/javascript" src="{% static 'css3template_blog/assets/js/jquery.fitvids.js' %}"></script>
 <script type="text/javascript" src="{% static 'css3template_blog/assets/js/index.js' %}"></script>
-
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+        inlineMath: [ ['$', '$'] ],
+        displayMath: [ ['$$', '$$']],
+        processEscapes: true,
+        <!--skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']-->
+    },
+    messageStyle: "none",
+    "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

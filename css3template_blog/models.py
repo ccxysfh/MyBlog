@@ -79,7 +79,7 @@ class BlogPost(models.Model):
             self.body = self.md_file.read()
 
         html = markdown2.markdown(self.body,
-                                  extras=["fenced-code-blocks", "tables",'toc'])
+                                  extras=["fenced-code-blocks", "tables",'toc','code-friendly'])
         try:
             toc = html.toc_html
             html = toc + html

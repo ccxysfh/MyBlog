@@ -1,0 +1,137 @@
+<blockquote>
+  <p>python版本3.5.2</p>
+</blockquote>
+
+<p>python提供了工具在需要时才产生结果，即一次产生一个结果项，而不是在内存中一次产生全部结果列表。</p>
+
+<p>延迟的核心是迭代器。</p>
+
+<p>后面的内容包括以下几个部分，可迭代对象和迭代器，生成器，map和zip，filter和reduce，序列range，enumerate，文件迭代器，字典视图迭代器。</p>
+
+<h2>可迭代对象和迭代器</h2>
+
+<p>一个可迭代对象需要支持<code>__iter__()</code>和<code>__next__()</code>这两个方法，这两个方法构成迭代协议。</p>
+
+<p><code>__iter__()</code>返回迭代器对象本身,它允许对象（容器containers和迭代器iterators）在for和in表达式中直接使用；</p>
+
+<p><code>__next__()</code>返回容器container中的下一个元素，如果没有更多元素，则会引起<code>StopIteration</code>异常。</p>
+
+<p>生成器是实现迭代协议的一种便利方式，如果一个容器对象的<code>__iter__()</code>是以生成器实现的，它会自动返回一个生成器对象。</p>
+
+<blockquote>
+  <p>在之后的阅读中始终注意，哪些对象本身就是迭代器，哪些对象需要使用iter(self)来返回迭代器。</p>
+</blockquote>
+
+<h2>生成器</h2>
+
+<p><strong>一个生成器的迭代器是生成器自身</strong>。</p>
+
+<p><strong>一个生成器运行到完成，必须产生一个新的生成器以再次开始</strong>。</p>
+
+<p>有两种语言结构尽可能的延迟结果创建，无需一次构建所有对象：生成器函数和生成器表达式。</p>
+
+<ol>
+<li><p>生成器函数</p>
+
+<p>举例说明，有如下定义：</p>
+
+<pre><code>def gen():
+   for i in range(5):
+       x = yield i
+       print("x:",x)
+</code></pre>
+
+<p>理解<code>yield</code>：</p>
+
+<p>yield表达式只在定义生成器函数时使用，而且也只能在函数体中使用。使用了yield表达式的函数会被特别的解释为生成器。yield语句挂起该函数并向调用者发送回一个值，同时保留足够的状态使得函数从离开的地方继续。</p>
+
+<p>当通过调用生成器的某个方法继续时，函数在yield返回后立即继续执行，继续时yield表达式的值取决于调用的方法，如果调用的是<code>__next__()</code>即内置函数<code>next()</code>,yield表达式的值为<code>None</code>,如果是<code>send()</code>，则yield表达式的值为传递给send方法的值。</p>
+
+<p>理解<code>yield from</code>：</p>
+
+<p>将后面的表达式视为子迭代器，子迭代器的所有返回值都会直接返回给当前生成器的调用者；同理，外部调用<code>send()</code>和<code>throw()</code>也可直接传递到子迭代器(也是生成器的话)内部。下面的两条语句作用是一致的：</p>
+
+<pre><code>yield from iterable
+for item in iterable: yield item
+</code></pre>
+
+<p>当一个生成器函数被调用时，返回一个生成器作为迭代器，在一个list内置调用中包含一个生成器表达式以迫使其生成包含所有结果的列表：</p>
+
+<pre><code>&gt;&gt;&gt;g = gen()
+&gt;&gt;&gt;list(g)
+[0, 1, 2, 3, 4]
+</code></pre>
+
+<p>也可以通过next方法依次获取,直到StopIteration异常，生成器运行完成：</p>
+
+<pre><code>&gt;&gt;&gt;g = gen()
+&gt;&gt;&gt;next(g)
+0
+&gt;&gt;&gt;next(g)
+x: None
+1
+···
+&gt;&gt;&gt;next(g)
+StopIteration
+</code></pre>
+
+<p>生成器函数协议中增加了一个send方法，send方法的行为可以这么理解:</p>
+
+<ol>
+<li><p>将值发送给生成器，即回到生成器函数内部的，yield表达式返回发送的值：</p>
+
+<pre><code>&gt;&gt;&gt;g = gen()
+&gt;&gt;&gt;next(g)
+0
+&gt;&gt;&gt;g.send(100)
+x: 100
+1
+</code></pre></li>
+<li><p>如果没有调用send，正常调用next，那么在生成器函数内部yield表达式返回None：</p>
+
+<pre><code>&gt;&gt;&gt;g = gen()
+&gt;&gt;&gt;next(g)
+0
+&gt;&gt;&gt;next(g)
+x: None
+1
+</code></pre></li>
+</ol>
+
+<p>通过一个实例更好的理解<code>yield from</code>和生成器的<code>send</code>方法，定义如下两个生成器：</p>
+
+<pre><code>def accumulate():
+   tally = 0
+   while 1:
+       next = yield
+       if next is None:
+           return tally
+       tally += next
+
+def gather_tallies(tallies):
+   while 1:
+       tally = yield from accumulate()
+       tallies.append(tally)
+</code></pre>
+
+<p>按如下方式进行调用：</p>
+
+<p><pre><code>tallies = []
+acc = gather_tallies(tallies)
+next(acc)  # Ensure the accumulator is ready to accept values
+
+for i in range(4):
+   acc.send(i)
+acc.send(None)  # Finish the first tally
+
+for i in range(5):
+   acc.send(i)
+acc.send(None)  # Finish the second tally
+
+&gt;&gt;&gt;tallies
+[6, 10]
+</code></pre></li>
+<li><p>生成器表达式</p></p>
+
+<p><p>迭代器和列表解析的概念形成生成器表达式，与列表解析不同，生成器表达式包含在园括号(parentheses)而不是方括号(brackets or curly braces)中，如(x ** 2 for x in range(4))。</p></li>
+</ol></p>

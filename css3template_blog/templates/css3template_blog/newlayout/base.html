@@ -84,6 +84,14 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script type="text/javascript" src="{% static 'css3template_blog/assets/js/jquery.fitvids.js' %}"></script>
 <script type="text/javascript" src="{% static 'css3template_blog/assets/js/index.js' %}"></script>
+
+
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/javascript" src="{% static 'css3template_blog/MathJax/MathJax.js' %}"></script>
+<script type="text/javascript" src="{% static 'css3template_blog/MathJax/config/TeX-AMS-MML_HTMLorMML.js' %}"></script>
+<!--<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>-->
 <!-- mathjax config similar to math.stackexchange -->
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -95,19 +103,13 @@ MathJax.Hub.Config({
         <!--skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']-->
     },
     TeX: {
-        git extensions: ["autoload-all.js"]
-        <!--extensions: ["autoload-all.js"] "autobold.js",-->
+        extensions: ["autobold.js", "autoload-all.js",  ],
     },
 
     messageStyle: "none",
     "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
 });
 </script>
-<script type="text/javascript" src="{% static 'css3template_blog/MathJax/MathJax.js' %}"></script>
-<script type="text/javascript" src="{% static 'css3template_blog/MathJax/config/TeX-AMS-MML_HTMLorMML.js' %}"></script>
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<!--<script type="text/javascript" async-->
-  <!--src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">-->
-<!--</script>-->
+
 </body>
 </html>

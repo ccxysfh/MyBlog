@@ -1,4 +1,4 @@
-static_cdn
+
 .pydevproject
 .project
 .settings/*
@@ -14,3 +14,12 @@ css3template_blog/static/css3template_blog/images_before_compression/*
 myblog/.ropeproject/
 .ropeproject
 .DS_Store
+
+# static
+static_cdn/*
+
+# log
+logs/*
+
+# media
+media/*

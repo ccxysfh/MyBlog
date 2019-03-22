@@ -1,14 +1,15 @@
+import logging
 from collections import defaultdict
-from math import ceil
-from os.path import join
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, redirect, get_object_or_404
+from math import ceil
 
 from .models import BlogPost
 
 exclude_posts = ("shares","Happy Birthday To My Princess",)
+logger = logging.getLogger("myblog.custom")
 
 
 # Create your views here.
@@ -48,7 +49,7 @@ def blogpost(request, slug, post_id):
 
 def tagdisplay(request, tag, page=''):
     args = dict()
-    print(tag)
+    logger.log(level=logging.INFO, msg="{tag}".format(tag=tag))
     args['tag'] = tag
     args['blogposts'] = BlogPost.objects.filter(tags__name__in=[tag,])
     args['blogpostsnum'] = len(args['blogposts'])
@@ -132,5 +133,4 @@ def happy_birthday(request):
     tag = "HappyBirthday"
     args['tag'] = tag
     args['blogposts'] = BlogPost.objects.filter(tags__name__in=[tag, ])
-    print(args['blogposts'])
     return render(request, 'css3template_blog/newlayout/birthday.html', args)

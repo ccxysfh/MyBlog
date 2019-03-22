@@ -56,7 +56,7 @@ else:
 
     STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
     STATIC_URL = '/static/'
-    MEDIA_ROOT = '/home/changxin/deploy/blog/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     MEDIA_URL = '/media/'
 
 

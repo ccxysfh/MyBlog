@@ -11,7 +11,14 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+
+from time import strftime
+
 from . import choose_settings
+
+BASE_DIR = choose_settings.BASE_DIR
+
+LOG_DIR = os.path.join(BASE_DIR, "logs")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ')9x^^&nx-a$4np!fck5mc0b2%ujr61y02u3n@ss)10hu6yk9cj'
@@ -152,68 +159,97 @@ ADMINS = [
 # when BrokenLinkEmailsMiddleware is enabled.
 MANAGERS = ADMINS
 
+# logging configuration
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# TEMPLATE_DEBUG = DEBUG
+# https://docs.djangoproject.com/en/2.1/topics/logging/#default-logging-configuration
+# When DEBUG is True:
 #
+# The django logger sends messages in the django hierarchy (except django.server) at the INFO level or higher to the
+# console.
+# When DEBUG is False:
 #
+# The django logger sends messages in the django hierarchy (except django.server) with ERROR or CRITICAL level to
+# AdminEmailHandler.、
 #
+# set log level:
+# DJANGO_LOG_LEVEL=DEBUG
 
-#
-#
-#
-# # List of finder classes that know how to find static files in
-# # various locations.
-# STATICFILES_FINDERS = (
-#     'django.contrib.staticfiles.finders.FileSystemFinder',
-#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
-# )
-#
-# TEMPLATE_LOADERS = (
-#     'django.template.loaders.filesystem.Loader',
-#     'django.template.loaders.app_directories.Loader',
-#     # 'django.template.loaders.eggs.Loader',
-# )
-#
-# # Quick-start development settings - unsuitable for production
-# # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
-#
-#
-# TEMPLATE_DIRS = choose_settings.TEMPLATE_DIRS
+import os
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}
 
+LOG_PATH = os.path.join(BASE_DIR, 'logs')
+if not os.path.exists(LOG_PATH):
+    os.mkdir(LOG_PATH)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-SITE_ID = 1
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        # todo customize my own filter
+        # 'special': {
+        #     '()': 'project.logging.SpecialFilter',
+        #     'foo': 'bar',
+        # },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_PATH, "info{time_str}.log".format(time_str=strftime('%Y%m%d%H')))
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'myblog.custom': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        }
+    }
+}

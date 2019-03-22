@@ -1,24 +1,22 @@
 import os
+
+import markdown2
 from datetime import datetime
-
-from django.db import models, connection, connections, transaction
-from django.utils import timezone
-
-# for slug, get_absolute_url
-from django.template.defaultfilters import slugify
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
-
+from django.db import models, connection, connections, transaction
 # delete md_file before delete/change model
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from django.core.files.base import ContentFile
-
-import markdown2
-from unidecode import unidecode
+# for slug, get_absolute_url
+from django.template.defaultfilters import slugify
 from taggit.managers import TaggableManager
-
+from unidecode import unidecode
 
 upload_dir = 'content/BlogPost/%s/%s'
+import logging
+
+logger = logging.getLogger("myblog.custom")
 
 
 class BlogPost(models.Model):
@@ -130,7 +128,7 @@ class BaseManage(models.Manager):
         try:
             self.__cursor = connections[db_name].cursor()
         except Exception as e:
-            print("ERROR:[", e, ']')
+            logger.log(level=logging.INFO, msg='ERROR:[{e}]'.format(e=e))
     # 配置一个函数文档字符串模版吧 FIXED defm + tab
     def execute_single(self, sqlVO):
         """数据库查询的增删改底层操作
@@ -141,8 +139,8 @@ class BaseManage(models.Manager):
         try:
             self.__cursor.execute(sqlVO.get('sql'), sqlVO.get('vars', None))
         except Exception as e:
-            print('Failed to execute SQL[%s]\n' % sqlVO.get('sql'))
-            print("ERROR:[", e, ']')
+            logger.log(level=logging.INFO, mag='Failed to execute SQL[%s]\n' % sqlVO.get('sql'))
+            logger.log(level=logging.INFO, msg="ERROR:[{e} ]".format(e=e))
             raise Exception(e) # 上层捕获异常，回滚事务
         else: # 若无异常执行else，该条语句返回True，不提交事务，最后上层调用提交事务
             return True
@@ -152,8 +150,8 @@ class BaseManage(models.Manager):
             self.__cursor.execute(sqlVO.get('sql'), sqlVO.get('vars', None))
             return self.dictfetchall(self.__cursor)
         except Exception as e:
-            print('Failed to execute SQL[%s]\n' % sqlVO.get('sql'))
-            print("ERROR:[", e, ']')
+            logger.log(level=logging.INFO, mag='Failed to execute SQL[%s]\n' % sqlVO.get('sql'))
+            logger.log(level=logging.INFO, msg="ERROR:[{e} ]".format(e=e))
             raise Exception(e)
 
     def select_single_tuple(self, sqlVO):
@@ -161,7 +159,7 @@ class BaseManage(models.Manager):
             self.__cursor.execute(sqlVO.get('sql'), sqlVO.get('vars', None))
             return self.__cursor.fetchall()
         except Exception as e:
-            print('Failed to execute SQL[%s]\n' % sqlVO.get('sql'))
+            logger.log(level=logging.INFO, mag='Failed to execute SQL[%s]\n' % sqlVO.get('sql'))
             raise Exception(e)
 
 def transaction_decorator(f):
@@ -176,8 +174,8 @@ def transaction_decorator(f):
             with transaction.atomic():
                 f(bsm)
         except Exception as e:
-            print("transaction error！")
-            print('ERROR:[', e, ']')
+            logger.log(level=logging.INFO, msg="transaction error！")
+            logger.log(level=logging.INFO, msg="ERROR:[{e} ]".format(e=e))
 
     return wrapper
 

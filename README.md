@@ -12,7 +12,12 @@
 
 [这是一个非常详尽的Django+uWSGI+nginx安装说明](https://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html)
 
+项目启动前，需要到static file和media file进行组织
+
 ```
+collect static files:
+python manage.py collectstatic
+
 pip install uwsgi  
 将项目配置写入mysite_uwsgi.ini中，本项目参考uwsgi.ini  
 uwsgi --ini mysite_uwsgi.ini  
@@ -54,9 +59,9 @@ django后台提供数据接口，数据渲染在vue.js的script中实现
 
 
 
+> 插播一则想要学习的结构：湾区日报,下面是湾区日报的技术栈介绍。
+
 主要用 Python/Django，Celery，RabbitMQ，Postgres 以及 Redis 搭建的。
-
-
 
 对于湾区日报，Web App 就是 [Django](https://www.djangoproject.com/) App，用 [uwsgi](https://uwsgi-docs.readthedocs.org/en/latest/) 跑N个进程，用 [supervisord](http://supervisord.org/) 来管理进程，前面挂一个 [nginx](https://www.nginx.com/) 当 load balancer。Database用的是 [Postgres](http://www.postgresql.org/) 与 [Redis](http://redis.io/)  —  其中，大部分需要永久存储的数据都在Postgres中，而Redis存的是文章的访问数与一些只需保留一两天的数据。Task Queue是用 [RabbitMQ](http://www.rabbitmq.com/)。Scheduler用的是 [Celery Beat](http://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html)。而Async Worker是 [Celery](http://docs.celeryproject.org/en/latest/index.html)。下图是湾区日报后台简单的架构
 
@@ -110,6 +115,7 @@ RSS订阅
       }
     }
   })
+  
   ```
 
   计算属性与方法的区别，结果是一样的，但是计算属性会根据依赖进行缓存，如果依赖没有发生变化，那么会立即返回之前的值，所以具体使用看需求，如果缓存不影响结果，那就定义计算属性。

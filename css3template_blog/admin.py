@@ -1,16 +1,14 @@
-from django.contrib import admin
-from django.contrib import admin
-from .models import BlogPost, BlogPostImage
-
-from django.forms import TextInput, Textarea
-from django.db import models
+import os
+import platform
 
 from django import forms
-
-from django.core.files.base import ContentFile
-import os
 from django.conf import settings
-import platform
+from django.contrib import admin
+from django.core.files.base import ContentFile
+from django.forms import TextInput, Textarea
+
+from .models import BlogPost, BlogPostImage
+
 
 # Register your models here.
 
@@ -51,6 +49,7 @@ class BlogPostAdmin(admin.ModelAdmin):
                     os.remove(os.path.join(root, file))
 
     def save_model(self, request, obj, form, change):
+        # md
         if obj:
             if obj.body:   # body有内容的时候才会更新md_file
                 filename = obj.filename

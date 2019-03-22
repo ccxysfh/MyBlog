@@ -127,6 +127,7 @@ USE_TZ = True
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
 STATIC_ROOT = choose_settings.STATIC_ROOT
+print(STATIC_ROOT)
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -144,7 +145,7 @@ MEDIA_URL = choose_settings.MEDIA_URL
 # A list of all the people who get code error notifications when DEBUG=False and a view raises an exception.
 ADMINS = [
     # ('Your Name', 'your_email@example.com'),
-    ('ChangxinCheng', 'ccxysfh1993@gmail.com')
+    ('ChangxinCheng', 'chengcx1019@gmail.com')
 ]
 
 # A list in the same format as ADMINS that specifies who should get broken link notifications

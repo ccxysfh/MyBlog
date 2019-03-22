@@ -16,7 +16,7 @@ import platform
 node = platform.node()
 print(node)
 dev_machines = ('cheng-cx', 'cheng-cx.local','localhost','study.centos.changxin')
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if node in dev_machines:
     print('Debug')
     # folder BASE_DIR or project myblog dir which is the same as app folder.
@@ -42,30 +42,23 @@ if node in dev_machines:
     ALLOWED_HOSTS = ['*']
 else:
     print('deploy')
-    DEBUG = False
+    DEBUG = True
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'blogcx',
             'USER': 'root',
-            'PASSWORD': '123456',
+            'PASSWORD': 'Nio@1968',
             'HOST': 'localhost',
             'PORT': '3306',
         }
     }
-    PROJECT_DIR = '/home/changxin/deploy/blog/MyBlog'
+
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
+    STATIC_URL = '/static/'
     MEDIA_ROOT = '/home/changxin/deploy/blog/media/'
     MEDIA_URL = '/media/'
-    STATIC_ROOT = '/home/changxin/deploy/blog/static/'
-    STATIC_URL = '/static/'
 
-    STATICFILES_DIRS = (
-        os.path.join(PROJECT_DIR, 'static'),
-    )
-
-    TEMPLATE_DIRS = (
-        os.path.join(PROJECT_DIR, 'templates'),
-    )
 
     ALLOWED_HOSTS = [
         '*',

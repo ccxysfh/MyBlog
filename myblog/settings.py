@@ -133,21 +133,22 @@ USE_TZ = True
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = choose_settings.STATIC_ROOT
-print(STATIC_ROOT)
+
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = choose_settings.STATIC_URL
-
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/var/www/example.com/media/"
-MEDIA_ROOT = choose_settings.MEDIA_ROOT
+STATIC_URL = '/static/'
+# truth path in disk
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = choose_settings.MEDIA_URL
+MEDIA_URL = '/media/'
+
+# Absolute filesystem path to the directory that will hold user-uploaded files.
+# Example: "/var/www/example.com/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # A list of all the people who get code error notifications when DEBUG=False and a view raises an exception.
 ADMINS = [
@@ -159,97 +160,7 @@ ADMINS = [
 # when BrokenLinkEmailsMiddleware is enabled.
 MANAGERS = ADMINS
 
-# logging configuration
 
 
-# https://docs.djangoproject.com/en/2.1/topics/logging/#default-logging-configuration
-# When DEBUG is True:
-#
-# The django logger sends messages in the django hierarchy (except django.server) at the INFO level or higher to the
-# console.
-# When DEBUG is False:
-#
-# The django logger sends messages in the django hierarchy (except django.server) with ERROR or CRITICAL level to
-# AdminEmailHandler.、
-#
-# set log level:
-# DJANGO_LOG_LEVEL=DEBUG
 
-import os
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-        },
-    },
-}
-
-LOG_PATH = os.path.join(BASE_DIR, 'logs')
-if not os.path.exists(LOG_PATH):
-    os.mkdir(LOG_PATH)
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-    'filters': {
-        # todo customize my own filter
-        # 'special': {
-        #     '()': 'project.logging.SpecialFilter',
-        #     'foo': 'bar',
-        # },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-        },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_PATH, "info{time_str}.log".format(time_str=strftime('%Y%m%d%H')))
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'propagate': True,
-        },
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'myblog.custom': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-        }
-    }
-}

@@ -10,39 +10,122 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 # choose settings between Developement and Deploy
+
+import logging
 import os
 import platform
 
-node = platform.node()
-print(node)
-dev_machines = ('cheng-cx', 'cheng-cx.local','localhost','study.centos.changxin')
+from time import strftime
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOG_PATH = os.path.join(BASE_DIR, 'logs')
+
+# config log with dictconfig
+if not os.path.exists(LOG_PATH):
+    os.mkdir(LOG_PATH)
+
+# logging configuration
+
+
+# https://docs.djangoproject.com/en/2.1/topics/logging/#default-logging-configuration
+# When DEBUG is True:
+#
+# The django logger sends messages in the django hierarchy (except django.server) at the INFO level or higher to the
+# console.
+# When DEBUG is False:
+#
+# The django logger sends messages in the django hierarchy (except django.server) with ERROR or CRITICAL level to
+# AdminEmailHandler.、
+#
+# set log level:
+# DJANGO_LOG_LEVEL=DEBUG
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        # todo customize my own filter
+        # 'special': {
+        #     '()': 'project.logging.SpecialFilter',
+        #     'foo': 'bar',
+        # },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_PATH, "info{time_str}.log".format(time_str=strftime('%Y%m%d%H')))
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'myblog.custom': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        }
+    }
+}
+
+logger = logging.getLogger("myblog.custom")
+
+node = platform.node()
+logger.log(level=logging.INFO, msg="{node}".format(node=node))
+
+dev_machines = ('cheng-cx', 'chengcx')
+
 if node in dev_machines:
-    print('Debug')
+    logger.log(level=logging.INFO, msg='Debug')
     # folder BASE_DIR or project myblog dir which is the same as app folder.
-    myblog = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # project dir, contains static and media folder under deploy environment
-    PROJECT_DIR = os.path.dirname(myblog)
-    print('MyBlog:',myblog,'\nPROJECT_DIR:', PROJECT_DIR)
+
     DEBUG =  True
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'blogcx',
             'USER': 'root',
-            'PASSWORD': '123456',
+            'PASSWORD': 'Nio@1968',
+            'host': 'localhost',
             'PORT': '3306',
         }
     }
-    STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
-    STATIC_URL = '/static/'
-    MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
-    MEDIA_URL = '/media/'
-    TEMPLATE_DIRS = [os.path.join(myblog, 'templates')]
+
     ALLOWED_HOSTS = ['*']
 else:
-    print('deploy')
-    DEBUG = True
+    logger.log(level=logging.INFO, msg='Deploy')
+    DEBUG = False
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -53,12 +136,6 @@ else:
             'PORT': '3306',
         }
     }
-
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
-    STATIC_URL = '/static/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    MEDIA_URL = '/media/'
-
 
     ALLOWED_HOSTS = [
         '*',

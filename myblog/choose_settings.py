@@ -24,22 +24,6 @@ LOG_PATH = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_PATH):
     os.mkdir(LOG_PATH)
 
-# logging configuration
-
-
-# https://docs.djangoproject.com/en/2.1/topics/logging/#default-logging-configuration
-# When DEBUG is True:
-#
-# The django logger sends messages in the django hierarchy (except django.server) at the INFO level or higher to the
-# console.
-# When DEBUG is False:
-#
-# The django logger sends messages in the django hierarchy (except django.server) with ERROR or CRITICAL level to
-# AdminEmailHandler.、
-#
-# set log level:
-# DJANGO_LOG_LEVEL=DEBUG
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -102,9 +86,10 @@ logger = logging.getLogger("myblog.custom")
 node = platform.node()
 logger.log(level=logging.INFO, msg="{node}".format(node=node))
 
-dev_machines = ('cheng-cx', 'chengcx')
+dev_machines = ('cheng-cx', 'chengcx', 'chengcx.local', 'cheng-cx.local')
 
 if node in dev_machines:
+    print('Debug')
     logger.log(level=logging.INFO, msg='Debug')
     # folder BASE_DIR or project myblog dir which is the same as app folder.
     # project dir, contains static and media folder under deploy environment
@@ -124,6 +109,7 @@ if node in dev_machines:
 
     ALLOWED_HOSTS = ['*']
 else:
+    print('prod')
     logger.log(level=logging.INFO, msg='Deploy')
     DEBUG = False
     DATABASES = {

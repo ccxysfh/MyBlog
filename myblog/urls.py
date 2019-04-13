@@ -13,21 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import include, url
-from django.contrib import admin
-from django.conf.urls.static import static
 from django.conf import settings
-from css3template_blog import views
+from django.conf.urls import include, url
+from django.conf.urls.static import static
+from django.contrib import admin
+
+from blog_api import views
 
 urlpatterns = [
     # admin
     url(r'^admin/', include(admin.site.urls)),
 
-    # css3template_blog
+                  # blog_api
     url(r'^(?P<page>\d*)/$', views.home),
     url(r'^tag/(?P<tag>[-\w\d]+),(?P<page>\d+)?/$', views.tagdisplay, name='tagdisplay'),
     url(r'^$', views.home),
-    url(r'^blog/', include('css3template_blog.urls')),
+                  url(r'^blog/', include('blog_api.urls')),
 
     # computer_science_flash_cards
     url(r'^flash/',include('computer_science_flash_cards.urls')),

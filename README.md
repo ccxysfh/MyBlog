@@ -50,6 +50,37 @@ index-url=http://mirrors.aliyun.com/pypi/simple/
 [install]
 trusted-host=mirrors.aliyun.com
 ```
+> 20190412,blog结构调整及自动发布更新
+
+use jupyter notebook to develop，install [Django-extensions](https://django-extensions.readthedocs.io/en/latest/installation_instructions.html)
+
+use [djangorestframework](https://www.django-rest-framework.org/tutorial/quickstart/)for rest implement
+
+## start
+
+```python
+python manage.py runserver port
+```
+
+Before start you should migrate database change:
+
+```python
+
+python manage.py makemigrations
+python manage.py migrate
+
+```
+
+
+
+**Note**
+add your node_name in choose_settings.py's dev_machines, get node_name:
+
+```shell
+>>> import platform
+>>> platform.node()
+```
+
 
 
 

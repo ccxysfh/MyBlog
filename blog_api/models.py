@@ -29,7 +29,7 @@ class BlogPost(models.Model):
             year = self.pub_date.year   # always store in pub_year folder
         else:
             year = datetime.now().year
-        upload_to = upload_dir % (year, self.title + '.md')
+        upload_to = upload_dir % (year, self.filename + '.md')
         return upload_to
 
     def get_html_name(self, filename):
@@ -37,7 +37,7 @@ class BlogPost(models.Model):
             year = self.pub_date.year
         else:
             year = datetime.now().year
-        upload_to = upload_dir % (year, filename)
+        upload_to = upload_dir % (year, self.filename + '.html')
         return upload_to
 
     CATEGORY_CHOICES = (
@@ -52,7 +52,8 @@ class BlogPost(models.Model):
 
     title = models.CharField(max_length=150)
     body = models.TextField(blank=True)
-    md_file = models.FileField(upload_to=get_upload_md_name, blank=True)  # uploaded md file
+    md_file = models.FileField(upload_to=get_upload_md_name,
+                               blank=True)  # uploaded md file, method 'upload_to' update filename
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     last_edit_date = models.DateTimeField('last edited', auto_now=True)
     slug = models.SlugField(max_length=200, blank=True) #The post slug is the user friendly and URL valid name of a post.
@@ -66,7 +67,7 @@ class BlogPost(models.Model):
 
     @property
     def filename(self):
-        if self.md_file:
+        if self.title:
             return os.path.basename(self.title)
         else:
             return 'no md_file'
@@ -76,8 +77,13 @@ class BlogPost(models.Model):
         if not self.body and self.md_file:
             self.body = self.md_file.read()
 
+        self.save_body_to_html()
+
+        super().save(*args, **kwargs)
+
+    def save_body_to_html(self):
         html = markdown2.markdown(self.body,
-                                  extras=["fenced-code-blocks", "tables",'toc','code-friendly'])
+                                  extras=["fenced-code-blocks", "tables", 'toc', 'code-friendly'])
         try:
             toc = html.toc_html
             html = toc + html
@@ -87,14 +93,20 @@ class BlogPost(models.Model):
                             ContentFile(html.encode('utf-8')), save=False)
         self.html_file.close()
 
-        super().save(*args, **kwargs)
-
     def display_html(self):
+        # if file not exists,create from bofy stored in db
+        if not os.path.exists(self.html_file.path):
+            self.save_body_to_html()
+
         with open(self.html_file.path, encoding='utf-8') as f:
             return f.read()
 
     def get_absolute_url(self):
         return reverse('blogpost_slug_id',
+                       kwargs={'slug': self.slug, 'post_id': self.id})
+
+    def get_api_absolute_url(self):
+        return reverse('api_blogpost_slug_id',
                        kwargs={'slug': self.slug, 'post_id': self.id})
 
 

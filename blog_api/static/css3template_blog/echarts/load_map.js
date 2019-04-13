@@ -3,7 +3,7 @@ function getEcharts(div_id, map_type, geoCoordForSpecialMap, baseMarkLine, baseM
     // Step:3 为模块加载器配置echarts的路径，从当前页面链接到echarts.js，定义所需图表路径
     require.config({
         paths: {
-            echarts: "/static/css3template_blog/echarts"
+          echarts: '/static/blog_api/echarts'
         }
     });
 

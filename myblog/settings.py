@@ -43,9 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-    'css3template_blog',
+    'blog_api',
     'taggit',
-    'computer_science_flash_cards'
+    'computer_science_flash_cards',
+    'django_extensions',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -160,7 +161,7 @@ ADMINS = [
 # when BrokenLinkEmailsMiddleware is enabled.
 MANAGERS = ADMINS
 
-
-
-
-
+NOTEBOOK_ARGUMENTS = [
+    '--ip', '0.0.0.0',
+    '--port', '9101',
+]

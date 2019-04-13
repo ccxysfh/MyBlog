@@ -24,7 +24,7 @@ class BlogPostAdminForm(forms.ModelForm):
             'body': Textarea(attrs={'rows': 100, 'cols': 100}),
             'title': TextInput(attrs={'size': 40}),
         }
-        exclude = ('html_file',)
+        exclude = ('html_file', 'md_file')
 
 
 class BlogPostAdmin(admin.ModelAdmin):
@@ -48,7 +48,7 @@ class BlogPostAdmin(admin.ModelAdmin):
                 if file not in md_file_list:
                     os.remove(os.path.join(root, file))
 
-    def save_model(self, request, obj, form, change):
+    def save_model(self, request, obj: BlogPost, form, change):
         # md
         if obj:
             if obj.body:   # body有内容的时候才会更新md_file

@@ -3,9 +3,9 @@ import logging
 from collections import defaultdict
 
 from django.core import serializers
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from math import ceil
 
 from .models import BlogPost
@@ -186,7 +186,7 @@ def api_allblogs(request, page=''):
         return redirect("/blog/api/allblogs/")
     else:
         split_page(args, blogposts, page)
-        # return render(request, 'css3template_blog/' + page_html, args)
+        # return render(request, 'blog_api/' + page_html, args)
         return JsonResponse(args)
 
 
@@ -201,7 +201,7 @@ def api_tagblog(request, tag, page=''):
         return redirect(reverse('api_tag', kwargs={'tag': tag}))
     else:
         split_page(args, blogposts, page)
-        # return render(request, 'css3template_blog/' + page_html, args)
+        # return render(request, 'blog_api/' + page_html, args)
         return JsonResponse(args)
 
 

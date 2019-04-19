@@ -3,13 +3,11 @@ import os
 import markdown2
 from datetime import datetime
 from django.core.files.base import ContentFile
-from django.core.urlresolvers import reverse
 from django.db import models, connection, connections, transaction
-# delete md_file before delete/change model
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-# for slug, get_absolute_url
 from django.template.defaultfilters import slugify
+from django.urls import reverse
 from taggit.managers import TaggableManager
 from unidecode import unidecode
 
@@ -124,7 +122,7 @@ class BlogPostImage(models.Model):
         upload_to = upload_dir % ('images', filename)  # filename involves extension
         return upload_to
 
-    blogpost = models.ForeignKey(BlogPost, related_name='images')
+    blogpost = models.ForeignKey(BlogPost, related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to=get_upload_img_name)
 
 class BaseManage(models.Manager):

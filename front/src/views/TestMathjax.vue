@@ -1,0 +1,26 @@
+<template>
+  <span ref="mathJaxEl" v-html="data" class="e-mathjax"></span>
+</template>
+<script type="text/javascript">
+  export default{
+  props:['data'],
+  watch:{
+    'window.MathJax'(val){
+        this.renderMathJax()
+    },
+    'data'(val){
+        this.renderMathJax()
+    }
+   },
+  mounted(){
+    this.renderMathJax()
+  },
+  methods:{
+    renderMathJax(){
+        if(window.MathJax){
+window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub,this.$refs.mathJaxEl]);
+    }
+  }
+}
+}
+</script>

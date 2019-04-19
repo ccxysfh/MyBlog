@@ -1,0 +1,78 @@
+nav {
+  background: transparent url(../images/menubar.png) repeat;
+}
+
+a:link {
+  text-decoration: none;
+}
+
+.fixed-top {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+}
+
+.content {
+    margin-top: 160px;
+}
+
+.away-top {
+    margin-top: 200px;
+}
+
+.author-profile .author-image {
+    z-index: 1130;
+}
+.author-profile .author-title {
+    z-index: 1130;
+}
+
+/*archieve css */
+h1.entry-title {
+    font-size: 2em;
+    font-weight: normal;
+    line-height: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+#blog-archives {
+    color: #aaa;
+}
+
+#blog-archives time {
+    position: absolute;
+    text-align: right;
+    left: 0.2em;
+    top: 2.15em;
+    font-size: 1.1em;
+    line-height: 1.2em;
+    font-weight: bold;
+    vertical-align: baseline;
+    font-family: 'pt_sansbold', "Helvetica Neue", Arial, sans-serif;
+}
+
+article h1, h2, h3, h4, h5, h6 {
+    text-rendering: optimizelegibility;
+    margin-bottom: 1em;
+    padding: 0 0 7px 0;
+    font-weight: bold;
+}
+
+a {
+    font-family: "latobold","Verdana",sans-serif;
+    color: black;
+}
+
+a:hover {
+    color: #83CDF7;
+    text-decoration: underline;
+}
+
+#blog-archives article footer {
+    padding: 0;
+    margin: 0;
+    font-family: 'pt_sansbold',"Helvetica Neue",Arial,sans-serif;
+    display: block;
+}

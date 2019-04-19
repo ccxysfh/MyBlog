@@ -9,16 +9,80 @@ https://docs.djangoproject.com/en/1.10/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
-
+import logging
 import os
+import sys
 
 from time import strftime
 
 from . import choose_settings
 
-BASE_DIR = choose_settings.BASE_DIR
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+LOG_PATH = os.path.join(BASE_DIR, 'logs')
 
-LOG_DIR = os.path.join(BASE_DIR, "logs")
+# config log with dictconfig
+if not os.path.exists(LOG_PATH):
+    os.mkdir(LOG_PATH)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        # todo customize my own filter
+        # 'special': {
+        #     '()': 'project.logging.SpecialFilter',
+        #     'foo': 'bar',
+        # },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_PATH, "info{time_str}.log".format(time_str=strftime('%Y%m%d%H')))
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'myblog.custom': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        }
+    }
+}
+
+logger = logging.getLogger("myblog.custom")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ')9x^^&nx-a$4np!fck5mc0b2%ujr61y02u3n@ss)10hu6yk9cj'
@@ -42,29 +106,34 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Uncomment the next line to enable admin documentation:
-    'django.contrib.admindocs',
+    # 'django.contrib.admindocs',
     'blog_api',
     'taggit',
     'computer_science_flash_cards',
     'django_extensions',
+
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    # this line 添加此行, No 'Access-Control-Allow-Origin' header is present on the requested resource
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+CORS_ORIGIN_ALLOW_ALL = True  # this line 添加此行:No 'Access-Control-Allow-Origin' header is present on the requested
+# resource
 
-ROOT_URLCONF = 'myblog.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [], # Directories where the engine should look for template source files, in search order.
+        'DIRS': ['front/dist'],  # Directories where the engine should look for template source files, in search order.
         'APP_DIRS': True, # load templates from the templates subdirectory inside each installed application
         'OPTIONS': {
             'context_processors': [
@@ -76,8 +145,11 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'myblog.wsgi.application'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "front/dist/static"),
+]
+print(BASE_DIR)
+WSGI_APPLICATION = 'wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases

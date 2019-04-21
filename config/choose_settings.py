@@ -38,12 +38,12 @@ if node in dev_machines:
     ALLOWED_HOSTS = ['*']
 else:
     print('prod')
-    DEBUG = False
+    DEBUG =True 
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'blogcx',
-            'USER': 'root',
+            'USER': 'blogcx',
             'PASSWORD': '789012',
             'HOST': 'localhost',
             'PORT': '3306',

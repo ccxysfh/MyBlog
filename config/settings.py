@@ -111,7 +111,6 @@ INSTALLED_APPS = [
     'taggit',
     'computer_science_flash_cards',
     'django_extensions',
-
 ]
 
 MIDDLEWARE = [
@@ -133,6 +132,7 @@ ROOT_URLCONF = 'urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        # 'DIRS': [],  # Directories where the engine should look for template source files, in search order.
         'DIRS': ['front/dist'],  # Directories where the engine should look for template source files, in search order.
         'APP_DIRS': True, # load templates from the templates subdirectory inside each installed application
         'OPTIONS': {

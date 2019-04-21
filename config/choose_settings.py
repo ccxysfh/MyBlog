@@ -29,7 +29,7 @@ if node in dev_machines:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'blogcx',
             'USER': 'root',
-            'PASSWORD': '123456',
+            'PASSWORD': 'Nio@1968',
             'host': 'localhost',
             'PORT': '3306',
         }
@@ -44,7 +44,7 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'blogcx',
             'USER': 'root',
-            'PASSWORD': 'Nio@1968',
+            'PASSWORD': '789012',
             'HOST': 'localhost',
             'PORT': '3306',
         }

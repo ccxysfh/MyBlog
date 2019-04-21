@@ -44,10 +44,10 @@
 </template>
 
 <script>
-import tagItem from './TagItem'
-import appLayout from './layout/AppLayout'
+  import tagItem from './TagItem'
+  import appLayout from './layout/AppLayout'
 
-export default {
+  export default {
   name: 'archive',
   components: {
     appLayout,
@@ -60,7 +60,7 @@ export default {
   },
   methods: {
     blogArchive () {
-      let reqUrl = this.$store.state.baseUrl + '/blog/api/archive/'
+      let reqUrl = this.$store.state.baseUrl + '/blog/api/archive'
       // console.log(reqUrl)
       this.$http.get(reqUrl)
         .then((response) => {

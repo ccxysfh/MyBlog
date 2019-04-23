@@ -24,7 +24,7 @@ uwsgi --ini mysite_uwsgi.ini
 
 网站的配置文件与nginx的配置文件连接，使nginx可以读取到相关配置  
 ubuntu:
-sudo ln -s /youtpath/managesys_nginx.conf  /etc/nginx/conf.d/ 
+sudo ln -s /data/myblog/myblog_nginx.conf  /etc/nginx/sites-enabled/ 
 Mac OS X：
 sudo ln -s  /yourpath/myblog_nginx.conf  /usr/local/etc/nginx/servers (nginx installed by homebrew)
 
@@ -109,16 +109,40 @@ npm config get registry or npm info express
 # clear
 npm config delete registry or npm config edit
 
-
 ```
 
 
 
-> 20190412,blog结构调整及自动发布更新
+> 20190412,blog结构调整
 
 use jupyter notebook to develop，install [Django-extensions](https://django-extensions.readthedocs.io/en/latest/installation_instructions.html)
 
 use [djangorestframework](https://www.django-rest-framework.org/tutorial/quickstart/)for rest implement
 
-> 20190413,blog迁移至新服务器，cicd集成
+> 20190413,blog迁移至新服务器
 
+由于阿里云服务到期，更换至其他服务器
+
+> 20190422,增加ssl
+
+**证书文件说明**
+
+- .key 文件是证书私钥文件，如果申请证书时没有选择系统创建CSR，则没有该文件。此时该私钥文件由您自己保管。
+
+- .crt 文件是证书文件，一般包含两段内容。如果是Apache服务器，会将证书文件拆分成 _public.crt(证书)文件和_chain.crt（证书链或中间证书）文件。
+
+- .pem 文件是证书文件，一般包含两段内容。一般Nginx的一些文档会用该扩展名文件，在阿里云证书中与.crt文件一样。
+
+  **友情提示**： **.crt**扩展名的证书文件采用Base64-encoded的PEM格式**文本文件**，可根据需要，修改成**.pem**等扩展名。
+
+- .pfx 文件，一般适合Tomcat/IIS服务器；每次下载都会产生新密码，该密码仅匹配本次下载的证书。如果需要更新证书文件，同时也要更新密码。
+
+**在nginx服务上安装SSL证书**
+
+- 修改配置文件
+
+**使用[Let's Encrypt](https://letsencrypt.org/getting-started/)生成证书**
+
+[certbot](https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx)
+
+证书文件路径：`/etc/letsencrypt`

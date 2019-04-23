@@ -4,10 +4,11 @@ django-contact-form
 unidecode
 Pillow
 uwsgi
-uwsgidecorators
 pymysql
 django-taggit
 markdown2
 django-cors-headers
 django-extensions==2.1.6
 jupyter==1.0.0
+jupyterlab
+autopep8

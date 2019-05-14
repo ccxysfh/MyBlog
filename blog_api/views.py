@@ -1,12 +1,15 @@
 import json
 import logging
+import platform
 from collections import defaultdict
+from math import ceil
 
+import requests
 from django.core import serializers
+from django.core.files.base import ContentFile
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from math import ceil
 
 from .models import BlogPost
 
@@ -241,3 +244,66 @@ def api_shares(request):
     blogpost_json = entire_blogpost(the_talks_post)
     args = {"shares": blogpost_json}
     return JsonResponse(args)
+
+
+base_raw_url = "https://raw.githubusercontent.com"
+repo_url = "/chengcx1019/architecture/master/writing/"
+
+
+def api_blog_save(request):
+    args = dict()
+    if request.method == "GET":
+        params = request.GET
+        blog = BlogPost()
+
+        blog.title = params.get("title", "")
+        blog.category = params.get("category")
+        repo_md_file = params.get("remote_source")
+        blog.remote_source = repo_md_file
+        blog.body = getRemoteSource(repo_md_file)
+        save_blogpost(blog)
+
+        args["result"] = "success"
+        return JsonResponse(args)
+
+
+def api_blog_trigger(request):
+    # equal to update
+    args = dict()
+    if request.method == "GET":
+        params = request.GET
+        repo_md_file = params.get("remote_source")
+        blog_res = BlogPost.objects.filter(remote_source=repo_md_file)
+        if (len(blog_res)) > 0:
+            blog = blog_res[0]
+            blog.body = getRemoteSource(repo_md_file)
+            blog.remote_source = "test update"
+            save_blogpost(blog)
+            args["result"] = "success"
+        else:
+            args["result"] = "fail"
+            args["desc"] = "no such blog with remote source {repo_md_file}".format(repo_md_file=repo_md_file)
+        return JsonResponse(args)
+
+
+def getRemoteSource(repo_md_file):
+    raw_url = base_raw_url + repo_url + repo_md_file
+    res = requests.get(raw_url)
+    return res.text.strip()
+
+
+def save_blogpost(obj):
+    if obj:
+        if obj.body:  # body有内容的时候才会更新md_file
+            filename = obj.filename
+            if filename != 'no md_file':
+                # On Windows file can't be removed so leave it
+                if platform.system() == "Windows":
+                    pass
+                else:
+                    obj.md_file.delete(save=False)  # 部署的时候存在,可以正常删除文件
+                    obj.html_file.delete(save=False)
+            # 没有md_file就根据title创建一个, 但不能创建html因为obj.save()的时候会创建
+            obj.md_file.save(filename + '.md', ContentFile(obj.body), save=False)
+            obj.md_file.close()
+    obj.save()

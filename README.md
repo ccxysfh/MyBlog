@@ -146,3 +146,13 @@ use [djangorestframework](https://www.django-rest-framework.org/tutorial/quickst
 [certbot](https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx)
 
 证书文件路径：`/etc/letsencrypt`
+
+
+
+> 20190514, 更新自动发布
+
+自动从repo拉取所有文件，扩展字段存储相对于writing的路径
+
+> 20190514, 增加私人助理jarvis
+
+通过与私人助理jarvis([hubot](https://hubot.github.com/))对话发布和更新blog

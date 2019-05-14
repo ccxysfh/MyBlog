@@ -12,3 +12,4 @@ django-extensions==2.1.6
 jupyter==1.0.0
 jupyterlab
 autopep8
+jupyter_nbextensions_configurator

@@ -237,3 +237,4 @@ NOTEBOOK_ARGUMENTS = [
     '--ip', '0.0.0.0',
     '--port', '9101',
 ]
+SECURE_SSL_REDIRECT = True

@@ -1,13 +1,12 @@
 import os
-import platform
 
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from django.core.files.base import ContentFile
 from django.forms import TextInput, Textarea
 
 from .models import BlogPost, BlogPostImage
+from .views import save_blogpost
 
 
 # Register your models here.
@@ -50,20 +49,7 @@ class BlogPostAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj: BlogPost, form, change):
         # md
-        if obj:
-            if obj.body:   # body有内容的时候才会更新md_file
-                filename = obj.filename
-                if filename != 'no md_file':
-                    # On Windows file can't be removed so leave it
-                    if platform.system() == "Windows":
-                        pass
-                    else:
-                        obj.md_file.delete(save=False)   # 部署的时候存在,可以正常删除文件
-                        obj.html_file.delete(save=False)
-                # 没有md_file就根据title创建一个, 但不能创建html因为obj.save()的时候会创建
-                obj.md_file.save(filename+'.md', ContentFile(obj.body), save=False)
-                obj.md_file.close()
-        obj.save()
+        save_blogpost(obj)
 
 
 admin.site.register(BlogPost, BlogPostAdmin)

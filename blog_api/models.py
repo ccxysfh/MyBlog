@@ -1,7 +1,7 @@
 import os
+from datetime import datetime
 
 import markdown2
-from datetime import datetime
 from django.core.files.base import ContentFile
 from django.db import models, connection, connections, transaction
 from django.db.models.signals import pre_delete
@@ -58,6 +58,7 @@ class BlogPost(models.Model):
     html_file = models.FileField(upload_to=get_html_name, blank=True)    # generated html file
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
     description = models.TextField(blank=True)
+    remote_source = models.CharField(max_length=100, blank=True)
     tags = TaggableManager()
 
     def __str__(self):

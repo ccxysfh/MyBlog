@@ -238,7 +238,7 @@ NOTEBOOK_ARGUMENTS = [
     '--port', '9101',
 ]
 CRONJOBS = [
-    ('*/1 * * * *', "config.cronjob.trigger_update_blog"),
+    ('*/15 * * * *', "config.cronjob.trigger_update_blog"),
 ]
 
 SECURE_SSL_REDIRECT = True

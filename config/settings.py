@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import logging
 import os
 import sys
-
 from time import strftime
 
 from . import choose_settings
@@ -111,6 +110,7 @@ INSTALLED_APPS = [
     'taggit',
     'computer_science_flash_cards',
     'django_extensions',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -237,4 +237,8 @@ NOTEBOOK_ARGUMENTS = [
     '--ip', '0.0.0.0',
     '--port', '9101',
 ]
+CRONJOBS = [
+    ('*/1 * * * *', "config.cronjob.trigger_update_blog"),
+]
+
 SECURE_SSL_REDIRECT = True

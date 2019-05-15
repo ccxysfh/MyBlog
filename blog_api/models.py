@@ -40,9 +40,9 @@ class BlogPost(models.Model):
 
     CATEGORY_CHOICES = (
         ('ml', 'Machine Learning'),
-        ('ani', 'Animation'),
-        ('su', 'Summary'),
         ('programming', 'Programming'),
+        ('su', 'Summary'),
+        ('ani', 'Animation'),
         ('acg', 'animation & summary & machine learning'),
         ('nc', 'No Category'),
         ('oth', 'Others'),

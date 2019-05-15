@@ -13,3 +13,4 @@ jupyter==1.0.0
 jupyterlab
 autopep8
 jupyter_nbextensions_configurator
+django-crontab

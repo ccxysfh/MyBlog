@@ -231,10 +231,10 @@ def api_archive(request):
 
     args['data'] = [
         ('programming', get_sorted_posts(category="programming")),
-        ('ani', get_sorted_posts(category="ani")),
         ('ml', get_sorted_posts(category="ml")),
         ('su', get_sorted_posts(category="su")),
         ('oth', get_sorted_posts(category="oth")),
+        ('ani', get_sorted_posts(category="ani")),
     ]
     return JsonResponse(args)
 
@@ -257,11 +257,13 @@ def api_blog_save(request):
         blog = BlogPost()
 
         blog.title = params.get("title", "")
-        blog.category = params.get("category")
+        blog.category = params.get("category", "programming")
         repo_md_file = params.get("remote_source")
         blog.remote_source = repo_md_file
-        blog.body = getRemoteSource(repo_md_file)
+        blog.body = get_remote_source(repo_md_file)
         save_blogpost(blog)
+        tag = params.get("tag", "start_up")
+        list(map(blog.tags.add, tag.split(',')))
 
         args["result"] = "success"
         return JsonResponse(args)
@@ -276,8 +278,8 @@ def api_blog_trigger(request):
         blog_res = BlogPost.objects.filter(remote_source=repo_md_file)
         if (len(blog_res)) > 0:
             blog = blog_res[0]
-            blog.body = getRemoteSource(repo_md_file)
-            blog.remote_source = "test update"
+            blog.body = get_remote_source(repo_md_file)
+            blog.remote_source = repo_md_file
             save_blogpost(blog)
             args["result"] = "success"
         else:
@@ -286,7 +288,7 @@ def api_blog_trigger(request):
         return JsonResponse(args)
 
 
-def getRemoteSource(repo_md_file):
+def get_remote_source(repo_md_file):
     raw_url = base_raw_url + repo_url + repo_md_file
     res = requests.get(raw_url)
     return res.text.strip()

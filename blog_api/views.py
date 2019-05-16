@@ -261,6 +261,15 @@ def api_blog_save(request):
         repo_md_file = params.get("remote_source")
         blog.remote_source = repo_md_file
         blog.body = get_remote_source(repo_md_file)
+        try:
+            save_blogpost(blog)
+            args["result"] = "success"
+        except Exception as e:
+            description = "save blog body fail, remote_source:{repo_md_file}, check character first".format(
+                repo_md_file)
+            logger.warn(description)
+            args["result"] = "fail"
+            args["desc"] = description
         save_blogpost(blog)
         tag = params.get("tag", "start_up")
         list(map(blog.tags.add, tag.split(',')))
@@ -280,8 +289,16 @@ def api_blog_trigger(request):
             blog = blog_res[0]
             blog.body = get_remote_source(repo_md_file)
             blog.remote_source = repo_md_file
-            save_blogpost(blog)
-            args["result"] = "success"
+            try:
+                save_blogpost(blog)
+                args["result"] = "success"
+            except Exception as e:
+                description = "update blog body fail, remote_source:{repo_md_file}, check character first".format(
+                    repo_md_file)
+                logger.warn(description)
+                args["result"] = "fail"
+                args["desc"] = description
+                return JsonResponse(args)
         else:
             args["result"] = "fail"
             args["desc"] = "no such blog with remote source {repo_md_file}".format(repo_md_file=repo_md_file)

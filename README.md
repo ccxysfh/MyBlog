@@ -207,3 +207,5 @@ python manage.py crontab remove
 > 日月和星期不可同时指定。
 >
 > 更多详情参考[django-crontab Github](https://github.com/kraiz/django-crontab)和[鸟哥的linux私房菜](http://linux.vbird.org/linux_basic/0430cron.php#cron)。
+
+设置完成后需要重启系统的cronjob(在mac似乎无需重启`sudo cron restart`，ubuntu需要重启`sudo service cron reload`)

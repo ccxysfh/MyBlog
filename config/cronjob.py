@@ -22,7 +22,7 @@ def getXpathTree(url):
     return tree
 
 base_url = "https://github.com"
-url = "https://github.com/chengcx1019/architecture/blob/master/writing/"
+url = "https://github.com/chengcx1019/universe/blob/master/writing/"
 base_raw_url = "https://raw.githubusercontent.com"
 
 def traverse_url(url):

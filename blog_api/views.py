@@ -247,7 +247,7 @@ def api_shares(request):
 
 
 base_raw_url = "https://raw.githubusercontent.com"
-repo_url = "/chengcx1019/architecture/master/writing/"
+repo_url = "/chengcx1019/universe/master/writing/"
 
 
 def api_blog_save(request):

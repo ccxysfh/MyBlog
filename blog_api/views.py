@@ -195,7 +195,6 @@ def api_allblogs(request, page=''):
 
 def api_tagblog(request, tag, page=''):
     args = dict()
-    print(tag)
     args['tag'] = tag
     blogposts = BlogPost.objects.filter(tags__name__in=[tag, ])
     args_generator(args, blogposts)

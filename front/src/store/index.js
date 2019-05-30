@@ -7,7 +7,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     blogpostsum: 0,
-    baseUrl: 'https://changxin10m.com',
+    baseUrl: 'http://127.0.0.1:8000',
     motto: '',
   },
   mutations: {

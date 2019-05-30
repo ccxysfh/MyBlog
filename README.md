@@ -209,3 +209,14 @@ python manage.py crontab remove
 > 更多详情参考[django-crontab Github](https://github.com/kraiz/django-crontab)和[鸟哥的linux私房菜](http://linux.vbird.org/linux_basic/0430cron.php#cron)。
 
 设置完成后需要重启系统的cronjob(在mac似乎无需重启`sudo cron restart`，ubuntu需要重启`sudo service cron reload`)
+
+> 20190530 更新公式加载异常的问题
+
+加载异常的原因：ajax请求与数据返回是异步的，即发起请求后未等待数据返回就开始渲染组件，此时需要的数据还未初始化，但已执行mathjax渲染过程，导致了最终的公式显示异常。
+
+期间需要更新npm依赖，需要将个别package更新到更新版本：`npm install {package_name}@latest` or `npm install {package_name}@next`.
+
+安装chromedriver经常会超时,建议:`npm install chromedriver --chromedriver_cdnurl=http://cdn.npm.taobao.org/dist/chromedriver `.
+
+如果需要重建工程，为了保持一致性，需要采取和之前一致的方式（不一致可能会出现意料之外的幺蛾子），`vue init webpack front`,vue升级到3.X之后可能会不太一致，请参考[Vue CLI](https://cli.vuejs.org/guide/creating-a-project.html#Pulling%202.x%20Templates%20(Legacy)).
+

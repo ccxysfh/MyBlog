@@ -220,5 +220,5 @@ python manage.py crontab remove
 
 安装chromedriver经常会超时,建议:`npm install chromedriver --chromedriver_cdnurl=http://cdn.npm.taobao.org/dist/chromedriver `.
 
-
+> 后续待优化的内容，jarvis命令自动化发布，页面链接及代码等样式的修复问题，vue依赖docker化
 

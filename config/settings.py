@@ -14,7 +14,15 @@ import os
 import sys
 from time import strftime
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 from . import choose_settings
+
+sentry_sdk.init(
+    dsn="https://08f1cb3d924a42fea2f52cee856ccb45@sentry.io/1495021",
+    integrations=[DjangoIntegration()]
+)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)

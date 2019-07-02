@@ -208,7 +208,7 @@ python manage.py crontab remove
 >
 > 更多详情参考[django-crontab Github](https://github.com/kraiz/django-crontab)和[鸟哥的linux私房菜](http://linux.vbird.org/linux_basic/0430cron.php#cron)。
 
-设置完成后需要重启系统的cronjob(在mac似乎无需重启`sudo cron restart`，ubuntu需要重启`sudo service cron reload`)
+
 
 > 20190530 更新公式加载异常的问题
 
@@ -222,3 +222,6 @@ python manage.py crontab remove
 
 > 后续待优化的内容，jarvis命令自动化发布，页面链接及代码等样式的修复问题，vue依赖docker化
 
+
+
+> 20190702 增加sentry监控

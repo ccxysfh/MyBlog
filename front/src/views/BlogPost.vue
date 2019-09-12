@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import tagItem from './TagItem'
+  import tagItem from './TagItem'
 
-export default {
+  export default {
   name: 'blog-post',
   components: {
     tagItem
@@ -74,8 +74,21 @@ export default {
 </script>
 
 <style scoped>
-@import "../assets/css/gfm.css";
-.author-thumb {
+
+  /*@import "../assets/css/md_theme/ursine-polar.css";*/
+  .codehilite code, tt {
+    position: relative;
+    margin: 0 0.334em;
+    padding: 0.334em 0.667em;
+    font-family: monospace, sans-serif;
+    font-size: 1.2em;
+    white-space: pre;
+    background: #faf9f7;
+    border: 1px solid #e5e4e1;
+    top: -2px
+  }
+
+  .author-thumb {
     width: 24px;
     height: 24px;
     float: left;
@@ -83,9 +96,9 @@ export default {
     padding: 3px;
     border-radius: 100%;
     margin-top: -5px;
-}
+  }
 
-.post-date {
+  .post-date {
     display: inline-block;
     margin-left: 8px;
     padding-left: 12px;
@@ -93,21 +106,23 @@ export default {
     text-transform: uppercase;
     font-size: 1.3rem;
     white-space: nowrap;
-}
+  }
 
-.post-title h2 {
+  .post-title h2 {
   font-size: 2.0em;
-}
+  }
 
-.post-excerpt {
+  .post-excerpt {
   font-size: 0.8em;
-}
+  }
 
-.container .post {
+  .container .post {
   padding: 1.5em 0;
-}
+  }
 
-.post-meta {
+  .post-meta {
   margin: 1.334em 0;
-}
+  }
+
+
 </style>

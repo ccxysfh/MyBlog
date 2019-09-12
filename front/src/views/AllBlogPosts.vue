@@ -10,10 +10,10 @@
 </template>
 
 <script>
-import blogpostpanel from './BlogPost'
-import pageFade from './PageFade'
+  import blogpostpanel from './BlogPost'
+  import pageFade from './PageFade'
 
-export default {
+  export default {
   name: 'all-blog-posts',
   components: {
     blogpostpanel,

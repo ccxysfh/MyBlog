@@ -14,7 +14,6 @@ import VmBackTop from 'vue-multiple-back-top'
 
 
 import './assets/css/style.css'
-
 import './assets/js/script.js'
 
 import 'vue-awesome/icons'

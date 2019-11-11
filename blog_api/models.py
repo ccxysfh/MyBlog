@@ -83,11 +83,7 @@ class BlogPost(models.Model):
     def save_body_to_html(self):
         html = markdown2.markdown(self.body,
                                   extras=["fenced-code-blocks", "tables", 'toc', 'code-friendly'])
-        try:
-            toc = html.toc_html
-            html = toc + html
-        except:
-            pass
+        
         self.html_file.save(self.title + '.html',
                             ContentFile(html.encode('utf-8')), save=False)
         self.html_file.close()

@@ -196,7 +196,7 @@ def api_allblogs(request, page=''):
 def api_tagblog(request, tag, page=''):
     args = dict()
     args['tag'] = tag
-    blogposts = BlogPost.objects.filter(tags__name__in=[tag, ],show=1)
+    blogposts = BlogPost.objects.filter(tags__name__in=[tag, ]).filter(show=1)
     args_generator(args, blogposts)
 
     if page and int(page) < 2:  # /0, /1 -> /
@@ -238,7 +238,7 @@ def api_archive(request):
     return JsonResponse(args)
 
 def get_all_blogposts():
-    return BlogPost.objects.exclude(title__in=exclude_posts,show=0)
+    return BlogPost.objects.exclude(title__in=exclude_posts).filter(show=1)
 
 
 def api_shares(request):

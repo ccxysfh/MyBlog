@@ -59,6 +59,7 @@ class BlogPost(models.Model):
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
     description = models.TextField(blank=True)
     remote_source = models.CharField(max_length=100, blank=True)
+    show = models.IntegerField(blank=True,default=0)
     tags = TaggableManager()
 
     def __str__(self):

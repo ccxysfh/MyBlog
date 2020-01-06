@@ -182,7 +182,7 @@ def split_page(args, blogposts, page):
 def api_allblogs(request, page=''):
     args = dict()
 
-    blogposts = BlogPost.objects.exclude(title__in=exclude_posts)
+    blogposts = get_all_blogposts()
     args_generator(args, blogposts)
 
     if page and int(page) < 2:  # /0, /1 -> /
@@ -196,7 +196,7 @@ def api_allblogs(request, page=''):
 def api_tagblog(request, tag, page=''):
     args = dict()
     args['tag'] = tag
-    blogposts = BlogPost.objects.filter(tags__name__in=[tag, ])
+    blogposts = BlogPost.objects.filter(tags__name__in=[tag, ],show=1)
     args_generator(args, blogposts)
 
     if page and int(page) < 2:  # /0, /1 -> /
@@ -216,7 +216,7 @@ def api_blogpost(request, slug, post_id):
 
 def api_archive(request):
     args = dict()
-    blogposts = BlogPost.objects.exclude(title__in=exclude_posts)
+    blogposts = get_all_blogposts()
 
     def get_sorted_posts(category):
         posts_by_year = defaultdict(list)
@@ -236,6 +236,9 @@ def api_archive(request):
         ('ani', get_sorted_posts(category="ani")),
     ]
     return JsonResponse(args)
+
+def get_all_blogposts():
+    return BlogPost.objects.exclude(title__in=exclude_posts,show=0)
 
 
 def api_shares(request):
@@ -260,10 +263,12 @@ def api_blog_save(request):
         repo_md_file = params.get("remote_source")
         blog.remote_source = repo_md_file
         blog.body = get_remote_source(repo_md_file)
+        blog.show=1
         try:
             save_blogpost(blog)
             args["result"] = "success"
         except Exception as e:
+            logger.info(e)
             description = "save blog body fail, remote_source:{repo_md_file}, check character first".format(
                 repo_md_file)
             logger.warn(description)

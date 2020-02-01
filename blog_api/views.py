@@ -247,6 +247,10 @@ def api_blogpost(request, slug, post_id):
 
 
 def api_archive(request):
+    blogposts_cache_key, args_str = get_cache_result_by_key("ARCHIVE")
+    if args_str:
+        return JsonResponse(json.loads(args_str))
+
     args = dict()
     blogposts = get_all_blogposts()
 
@@ -267,6 +271,7 @@ def api_archive(request):
         ('oth', get_sorted_posts(category="oth")),
         ('ani', get_sorted_posts(category="ani")),
     ]
+    cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
     return JsonResponse(args)
 
 def get_all_blogposts():
@@ -309,14 +314,16 @@ def api_blog_save(request):
         save_blogpost(blog)
         tag = params.get("tag", "start_up")
         list(map(blog.tags.add, tag.split(',')))
-        remove_tag_all_by_tag_str(tag)
+        remove_when_save(tag)
         args["result"] = "success"
         return JsonResponse(args)
 
 
-def remove_tag_all_by_tag_str(tag):
+def remove_when_save(tag):
     all_blogposts_cache_key = generate_cache_key("ALL")
     cache.delete(all_blogposts_cache_key)
+    archive_blogposts_cache_key = generate_cache_key("ARCHIVE")
+    cache.delete(archive_blogposts_cache_key)
     for t in tag.split(','):
         cache.delete(generate_cache_key(t))
 
@@ -334,7 +341,7 @@ def api_blog_trigger(request):
             blog.remote_source = repo_md_file
             try:
                 save_blogpost(blog)
-                remove_cache_contains_blogpost(blog.tags.all())
+                remove_when_update(blog.tags.all())
                 args["result"] = "success"
             except Exception as e:
                 description = "update blog body fail, remote_source:{repo_md_file}, check character first".format(
@@ -349,7 +356,7 @@ def api_blog_trigger(request):
         return JsonResponse(args)
 
 
-def remove_cache_contains_blogpost(tags):
+def remove_when_update(tags):
     all_blogposts_cache_key = generate_cache_key("ALL")
     cache.delete(all_blogposts_cache_key)
     for tag in json.loads(serializers.serialize("json", tags)):

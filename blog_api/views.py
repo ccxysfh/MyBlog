@@ -309,9 +309,16 @@ def api_blog_save(request):
         save_blogpost(blog)
         tag = params.get("tag", "start_up")
         list(map(blog.tags.add, tag.split(',')))
-
+        remove_tag_all_by_tag_str(tag)
         args["result"] = "success"
         return JsonResponse(args)
+
+
+def remove_tag_all_by_tag_str(tag):
+    all_blogposts_cache_key = generate_cache_key("ALL")
+    cache.delete(all_blogposts_cache_key)
+    for t in tag.split(','):
+        cache.delete(generate_cache_key(t))
 
 
 def api_blog_trigger(request):

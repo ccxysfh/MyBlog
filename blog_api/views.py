@@ -6,16 +6,21 @@ from math import ceil
 
 import requests
 from django.core import serializers
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+import redis
 
 from .models import BlogPost
+from .cache import generate_cache_key, generate_cache_key_id
 
 exclude_posts = ("shares","Happy Birthday To My Princess",)
 logger = logging.getLogger("myblog.custom")
 
+cache = redis.StrictRedis(host=settings.REDIS_HOST,
+                                  port=settings.REDIS_PORT, db=0)
 
 # Create your views here.
 def home(request,page_html='newlayout/index.html',page=''):
@@ -180,6 +185,9 @@ def split_page(args, blogposts, page):
 
 
 def api_allblogs(request, page=''):
+    blogposts_cache_key, args_str = get_cache_result_by_key("ALL")
+    if args_str:
+        return JsonResponse(json.loads(args_str))
     args = dict()
 
     blogposts = get_all_blogposts()
@@ -190,10 +198,23 @@ def api_allblogs(request, page=''):
     else:
         split_page(args, blogposts, page)
         # return render(request, 'blog_api/' + page_html, args)
+        cache.set(blogposts_cache_key, json.dumps(args,ensure_ascii=False))
         return JsonResponse(args)
 
 
+def get_cache_result_by_key(key):
+    all_blogposts_cache_key = generate_cache_key(key)
+    try:
+        args_str = cache.get(all_blogposts_cache_key)
+    except Exception as e:
+        logger.info("get cache error")
+    return all_blogposts_cache_key, args_str
+
+
 def api_tagblog(request, tag, page=''):
+    blogposts_cache_key, args_str = get_cache_result_by_key(tag)
+    if args_str:
+        return JsonResponse(json.loads(args_str))
     args = dict()
     args['tag'] = tag
     blogposts = BlogPost.objects.filter(tags__name__in=[tag, ]).filter(show=1)
@@ -203,14 +224,25 @@ def api_tagblog(request, tag, page=''):
         return redirect(reverse('api_tag', kwargs={'tag': tag}))
     else:
         split_page(args, blogposts, page)
-        # return render(request, 'blog_api/' + page_html, args)
+        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
         return JsonResponse(args)
 
 
 def api_blogpost(request, slug, post_id):
+    blogpost_cache_key = generate_cache_key_id("blig", post_id)
+    try:
+        args_str = cache.get(blogpost_cache_key)
+    except Exception as e:
+        logger.info("get blogpost cache error:{blog_id}".format(blog_id=post_id))
+    if not args_str:
+        return JsonResponse(json.loads(args_str))
+
     blogpost = get_object_or_404(BlogPost, pk=post_id)
+
     blogpost_json = entire_blogpost(blogpost)
+
     args = {'blogpost': blogpost_json}
+    cache.set(blogpost_cache_key, json.dumps(args, ensure_ascii=False))
     return JsonResponse(args)
 
 
@@ -295,6 +327,7 @@ def api_blog_trigger(request):
             blog.remote_source = repo_md_file
             try:
                 save_blogpost(blog)
+                remove_cache_contains_blogpost(blog.tags.all())
                 args["result"] = "success"
             except Exception as e:
                 description = "update blog body fail, remote_source:{repo_md_file}, check character first".format(
@@ -307,6 +340,17 @@ def api_blog_trigger(request):
             args["result"] = "fail"
             args["desc"] = "no such blog with remote source {repo_md_file}".format(repo_md_file=repo_md_file)
         return JsonResponse(args)
+
+
+def remove_cache_contains_blogpost(tags):
+    all_blogposts_cache_key = generate_cache_key("ALL")
+    cache.delete(all_blogposts_cache_key)
+    for tag in json.loads(serializers.serialize("json", tags)):
+        try:
+            tag_name = tag.get("fields").get("name")
+            cache.delete(generate_cache_key(tag_name))
+        except Exception as e:
+            logger.info(tag,e)
 
 
 def get_remote_source(repo_md_file):

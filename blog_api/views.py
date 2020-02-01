@@ -229,7 +229,7 @@ def api_tagblog(request, tag, page=''):
 
 
 def api_blogpost(request, slug, post_id):
-    blogpost_cache_key = generate_cache_key_id("blig", post_id)
+    blogpost_cache_key = generate_cache_key_id("BLOG", post_id)
     try:
         args_str = cache.get(blogpost_cache_key)
     except Exception as e:
@@ -341,7 +341,7 @@ def api_blog_trigger(request):
             blog.remote_source = repo_md_file
             try:
                 save_blogpost(blog)
-                remove_when_update(blog.tags.all())
+                remove_when_update(blog.tags.all(), blog.pk)
                 args["result"] = "success"
             except Exception as e:
                 description = "update blog body fail, remote_source:{repo_md_file}, check character first".format(
@@ -356,9 +356,11 @@ def api_blog_trigger(request):
         return JsonResponse(args)
 
 
-def remove_when_update(tags):
+def remove_when_update(tags, post_id):
     all_blogposts_cache_key = generate_cache_key("ALL")
     cache.delete(all_blogposts_cache_key)
+    blogpost_cache_key = generate_cache_key_id("BLOG", post_id)
+    cache.delete(blogpost_cache_key)
     for tag in json.loads(serializers.serialize("json", tags)):
         try:
             tag_name = tag.get("fields").get("name")

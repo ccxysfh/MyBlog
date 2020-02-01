@@ -234,7 +234,7 @@ def api_blogpost(request, slug, post_id):
         args_str = cache.get(blogpost_cache_key)
     except Exception as e:
         logger.info("get blogpost cache error:{blog_id}".format(blog_id=post_id))
-    if not args_str:
+    if args_str:
         return JsonResponse(json.loads(args_str))
 
     blogpost = get_object_or_404(BlogPost, pk=post_id)

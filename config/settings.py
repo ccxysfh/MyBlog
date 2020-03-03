@@ -249,4 +249,7 @@ CRONJOBS = [
     ('*/15 * * * *', "config.cronjob.trigger_update_blog"),
 ]
 
-SECURE_SSL_REDIRECT = True
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+
+# SECURE_SSL_REDIRECT = True

@@ -173,7 +173,7 @@ def entire_blogpost(blogpost):
     return blogpost_json
 
 
-def split_page(args, blogposts, page):
+def split_page(args, page):
     max_page = ceil(len(args['blogposts']) / 3)
     page = int(page) if (page and int(page) > 0) else 1
     args['page'] = page
@@ -187,16 +187,18 @@ def split_page(args, blogposts, page):
 def api_allblogs(request, page=''):
     blogposts_cache_key, args_str = get_cache_result_by_key("ALL")
     if args_str:
-        return JsonResponse(json.loads(args_str))
+        args = json.loads(args_str)
+        split_page(args, page)
+        return JsonResponse(args)
     args = dict()
-
+    split_page
     blogposts = get_all_blogposts()
     args_generator(args, blogposts)
 
     if page and int(page) < 2:  # /0, /1 -> /
         return redirect("/blog/api/allblogs/")
     else:
-        split_page(args, blogposts, page)
+        split_page(args, page)
         # return render(request, 'blog_api/' + page_html, args)
         cache.set(blogposts_cache_key, json.dumps(args,ensure_ascii=False))
         return JsonResponse(args)
@@ -204,6 +206,7 @@ def api_allblogs(request, page=''):
 
 def get_cache_result_by_key(key):
     all_blogposts_cache_key = generate_cache_key(key)
+    args_str=None
     try:
         args_str = cache.get(all_blogposts_cache_key)
     except Exception as e:

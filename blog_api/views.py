@@ -19,8 +19,9 @@ from .cache import generate_cache_key, generate_cache_key_id
 exclude_posts = ("shares","Happy Birthday To My Princess",)
 logger = logging.getLogger("myblog.custom")
 
-cache = redis.StrictRedis(host=settings.REDIS_HOST,
-                                  port=settings.REDIS_PORT, db=0)
+pool = redis.ConnectionPool(max_connections=5, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+
+cache = redis.StrictRedis(connection_pool=pool)
 
 # Create your views here.
 def home(request,page_html='newlayout/index.html',page=''):

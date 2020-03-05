@@ -15,6 +15,8 @@ import VmBackTop from 'vue-multiple-back-top'
 
 import './assets/css/style.css'
 import './assets/js/script.js'
+import './assets/js/libs//jquery-1.11.3.min.js'
+import './assets/js/libs/plantuml-encoder.min.js'
 
 import 'vue-awesome/icons'
 import * as filters from './filters' // global filters

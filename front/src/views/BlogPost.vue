@@ -12,6 +12,7 @@
 
       <section class="post-excerpt">
         <span v-html="blogpost.content"></span>
+        <span >some text</span>
         <!--<div>-->
 <!--<textarea v-model="formula" cols="30" rows="10"></textarea>-->
   <!--<vue-mathjax :formula="formula"></vue-mathjax>-->
@@ -59,7 +60,17 @@
         console.log('rendering mathjax');
         window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub], () => console.log('done'));
       }
+    },
+    uml(){
+      $("code").each(function() {
+        var uml_index = $(this).text().indexOf("@startuml")
+        if(uml_index>-1){
+          var src = "//www.plantuml.com/plantuml/img/" + window.plantumlEncoder.encode( $(this).text() )
+          $(this).replaceWith($('<img>').attr('src', src));
+        }
+      });
     }
+
   },
   watch: {
     blogpost: function() {
@@ -69,6 +80,7 @@
   },
   mounted() {
     this.reRender()
+    this.uml()
   },
 }
 </script>

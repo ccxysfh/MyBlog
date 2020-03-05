@@ -12,16 +12,10 @@
 
       <section class="post-excerpt">
         <span v-html="blogpost.content"></span>
-        <span >some text</span>
-        <!--<div>-->
-<!--<textarea v-model="formula" cols="30" rows="10"></textarea>-->
-  <!--<vue-mathjax :formula="formula"></vue-mathjax>-->
-<!--</div>-->
       </section>
       <footer class="post-meta">
         <img class="author-thumb" src="../assets/images/ccx.jpeg" alt="Changxin Cheng" nopin="nopin" />
         <router-link :to="{ name: 'profile'}">Changxin Cheng</router-link>
-        <!-- on <a href="/tag/postgres/">postgres</a> one or more-->
         posted in
         <tag-item
          v-for="tag in blogpost.tags"

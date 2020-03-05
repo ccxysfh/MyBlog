@@ -4,14 +4,8 @@ from blog_api import feeds
 from . import views
 
 urlpatterns = [
-    # url('^$', views.home),
-    # url(r'^(?P<slug>[-\w\d]+),(?P<post_id>\d+)/$', views.blogpost, name='blogpost_slug_id'),
-    # url('^archive/$', views.archive),
-    # url('^shares/$', views.shares),
-    # url('^profile/$',views.profile),
-    path('feed', feeds.LatestBlogpostsFeed()),
-    # url('^happy_birthday_to_my_princess_huyao/$',views.happy_birthday),
     # url('^happy_birthday_to_my_princess_huyao/$', views.happy_birthday),
+    path('feed', feeds.LatestBlogpostsFeed()),
     path('api/allblogs/', views.api_allblogs),
     path('api/allblogs/<str:page>', views.api_allblogs),
     path('api/tag/<str:tag>,<str:page>', views.api_tagblog, name='api_tag'),

@@ -11,7 +11,7 @@ import requests
 from lxml import html
 
 from blog_api.models import BlogPost
-from blog_api.views import get_remote_source, save_blogpost
+from blog_api.views import get_remote_source, save_blogpost,remove_when_update
 from config.settings import logger
 
 ext = ".md"
@@ -55,6 +55,7 @@ def trigger_update_blog():
             try:
                 blogpost.body = get_remote_source(remote_source)
                 save_blogpost(blogpost)
+                remove_when_update(blogpost.tags.all(), blogpost.pk)
             except Exception as e:
                 logger.warn("blogpost:{id} update from {remote_source} fail".format(id=blogpost.id,
                                                                                     remote_source=remote_source))

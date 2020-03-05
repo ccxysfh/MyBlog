@@ -15,8 +15,8 @@
 
           <router-view>
             <div slot="headContent">
-              <h1 class="blog-name"><a href="#">知行合一</a></h1>
-              <span class="blog-description">{{motto}}——求知笃行，珍惜所爱</span>
+              <h1 class="blog-name"><a href="#">0823</a></h1>
+              <span class="blog-description">{{motto}}——how you do anything is how you do everything</span>
             </div>
             <author-info slot="authorInfo"></author-info>
           </router-view>

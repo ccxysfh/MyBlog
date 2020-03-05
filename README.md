@@ -155,7 +155,13 @@ use [djangorestframework](https://www.django-rest-framework.org/tutorial/quickst
 
 > 20190514, 增加私人助理jarvis
 
-通过与私人助理jarvis([hubot](https://hubot.github.com/))对话发布和更新blog
+通过与私人助理jarvis([hubot](https://hubot.github.com/))对话发布和更新blog，以slack模式启动jarvis
+
+```shell
+./bin/hubot HUBOT_SLACK_TOKEN=xoxb-222935299232-625500868769-PNwj9Nxqta7akMJ5EaQztO4P --adapter slack
+```
+
+
 
 > 20190515, 增加定时任务，定时从git repo拉取blog更新
 

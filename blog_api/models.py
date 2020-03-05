@@ -102,9 +102,12 @@ class BlogPost(models.Model):
                        kwargs={'slug': self.slug, 'post_id': self.id})
 
     def get_api_absolute_url(self):
-        api_url = reverse('api_blogpost_slug_id', kwargs={'slug': self.slug, 'post_id': self.id})
+        return reverse('api_blogpost_slug_id',
+                       kwargs={'slug': self.slug, 'post_id': self.id})
 
-        return os.path.join('postDetail',api_url.split('/')[-2])
+    def get_feed_url(self):
+        api_url = reverse('api_blogpost_slug_id', kwargs={'slug': self.slug, 'post_id': self.id})
+        return os.path.join('/postDetail',api_url.split('/')[-2])
 
 
 @receiver(pre_delete, sender=BlogPost)

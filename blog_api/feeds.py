@@ -28,7 +28,7 @@ class LatestBlogpostsFeed(Feed):
 
 	# item_link is only needed if NewsItem has no get_absolute_url method.
 	def item_link(self, item):
-		return item.get_api_absolute_url()
+		return item.get_feed_url()
 
 
 if __name__ == '__main__':

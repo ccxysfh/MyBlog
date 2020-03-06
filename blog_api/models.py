@@ -107,7 +107,7 @@ class BlogPost(models.Model):
 
     def get_feed_url(self):
         api_url = reverse('api_blogpost_slug_id', kwargs={'slug': self.slug, 'post_id': self.id})
-        return os.path.join('/postpsDetail',api_url.replace('/','%2F'))
+        return os.path.join('/postDetail',api_url.replace('/','%2F'))
 
 
 @receiver(pre_delete, sender=BlogPost)

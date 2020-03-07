@@ -11,6 +11,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 import redis
 
@@ -19,6 +20,12 @@ from .cache import generate_cache_key, generate_cache_key_id
 
 exclude_posts = ("shares","Happy Birthday To My Princess",)
 logger = logging.getLogger("myblog.custom")
+
+base_raw_url = "https://raw.githubusercontent.com"
+repo_url = "/chengcx1019/universe/master/writing/"
+
+METHOD_GET='GET'
+METHOD_POST='POST'
 
 try:
     pool = redis.ConnectionPool(max_connections=5, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
@@ -167,6 +174,8 @@ def api_archive(request):
     cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
     return JsonResponse(args)
 
+
+
 def get_all_blogposts():
     return BlogPost.objects.exclude(title__in=exclude_posts).filter(show=1)
 
@@ -178,26 +187,22 @@ def api_shares(request):
     return JsonResponse(args)
 
 
-base_raw_url = "https://raw.githubusercontent.com"
-repo_url = "/chengcx1019/universe/master/writing/"
-
-
+@csrf_exempt
 def api_blog_save(request):
     args = dict()
-    if request.method == "GET":
-        params = request.GET
+    if request.method == METHOD_POST:
+        data = get_post_body(request)
         blog = BlogPost()
 
-        repo_md_file = params.get("remote_source")
+        repo_md_file = data.get("remote_source")
         blog_res = BlogPost.objects.filter(remote_source=repo_md_file)
         if len(blog_res)>0:
             args["result"] = "fail"
-            args["desc"] = "blog with same remote source already existed,remote_source:{repo_md_file}"\
-                .format(repo_md_file=repo_md_file)
+            args["desc"] = "blog with same remote source already existed"
             return JsonResponse(args)
 
-        blog.title = params.get("title", "")
-        blog.category = params.get("category", "programming")
+        blog.title = data.get("title", "")
+        blog.category = data.get("category", "programming")
 
         blog.remote_source = repo_md_file
         blog.body = get_remote_source(repo_md_file)
@@ -205,7 +210,8 @@ def api_blog_save(request):
         try:
             save_blogpost(blog)
             args["result"] = "success"
-            tag = params.get("tag", "start_up")
+            args['pk']=blog.pk
+            tag = data.get("tag", "start_up")
             list(map(blog.tags.add, tag.split(',')))
             remove_when_save(tag)
         except Exception as e:
@@ -218,19 +224,32 @@ def api_blog_save(request):
         return JsonResponse(args)
 
 
-def remove_when_save(tag):
-    all_blogposts_cache_key = generate_cache_key("ALL")
-    cache.delete(all_blogposts_cache_key)
-    archive_blogposts_cache_key = generate_cache_key("ARCHIVE")
-    cache.delete(archive_blogposts_cache_key)
-    for t in tag.split(','):
-        cache.delete(generate_cache_key(t))
+@csrf_exempt
+def update_blog_properties_pk(request):
+    if request.method == METHOD_POST:
+        data = get_post_body(request)
+        pk = data.get('pk', None)
+        blog_res = BlogPost.objects.filter(pk=pk)
+        args =blog_update_internal(blog_res, data)
+        if 'fail' == args['result']:
+            args['desc'] = 'please check pk'
+        return JsonResponse(args)
+
+
+@csrf_exempt
+def update_blog_properties_source(request):
+    if request.method == METHOD_POST:
+        data = get_post_body(request)
+        repo_md_file = data.get('remote_source')
+        blog_res = BlogPost.objects.filter(remote_source=repo_md_file)
+        args =blog_update_internal(blog_res, data)
+        return JsonResponse(args)
 
 
 def api_blog_trigger(request):
     # equal to update
     args = dict()
-    if request.method == "GET":
+    if request.method == METHOD_GET:
         params = request.GET
         repo_md_file = params.get("remote_source")
         blog_res = BlogPost.objects.filter(remote_source=repo_md_file)
@@ -280,33 +299,22 @@ def get_remote_source(repo_md_file):
     res = requests.get(raw_url)
     return res.text.strip()
 
-from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
-def update_blog_properties_source(request):
-    if request.method == "POST":
-        data = get_post_body(request)
-        repo_md_file = data.get('remote_source')
-        blog_res = BlogPost.objects.filter(remote_source=repo_md_file)
-        args =blog_update_internal(blog_res, data)
-        return JsonResponse(args)
+def remove_when_save(tag):
+    try:
+        all_blogposts_cache_key = generate_cache_key("ALL")
+        cache.delete(all_blogposts_cache_key)
+        archive_blogposts_cache_key = generate_cache_key("ARCHIVE")
+        cache.delete(archive_blogposts_cache_key)
+        for t in tag.split(','):
+            cache.delete(generate_cache_key(t))
+    except Exception as e:
+        logger.info(e)
 
 
 def get_post_body(request):
     data = json.loads(request.body, encoding='utf-8')
     return data
-
-
-@csrf_exempt
-def update_blog_properties_pk(request):
-    if request.method == "POST":
-        data = get_post_body(request)
-        pk = data.get('pk', None)
-        blog_res = BlogPost.objects.filter(pk=pk)
-        args =blog_update_internal(blog_res, data)
-        if 'fail' == args['result']:
-            args['desc'] = 'please check pk'
-        return JsonResponse(args)
 
 
 def blog_update_internal(blog_res, data)->dict:

@@ -96,7 +96,11 @@ def api_allblogs(request, page=''):
         return redirect("/blog/api/allblogs/")
     else:
         split_page(args, page)
-        cache.set(blogposts_cache_key, json.dumps(args,ensure_ascii=False))
+
+        try:
+            cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+        except Exception as e:
+            logger.warn("set tag cache fail", e)
         return JsonResponse(args)
 
 
@@ -122,8 +126,11 @@ def api_tagblog(request, tag, page=''):
     if page and int(page) < 2:  # /0, /1 -> /
         return redirect(reverse('api_tag', kwargs={'tag': tag}))
     else:
-        split_page(args, blogposts, page)
-        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+        split_page(args, page)
+        try:
+            cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+        except Exception as e:
+            logger.warn("set tag cache fail", e)
         return JsonResponse(args)
 
 

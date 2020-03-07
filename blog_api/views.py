@@ -3,135 +3,37 @@ import logging
 import platform
 from collections import defaultdict
 from math import ceil
+from datetime import datetime, timezone
 
 import requests
 from django.core import serializers
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
+import redis
 
 from .models import BlogPost
+from .cache import generate_cache_key, generate_cache_key_id
 
 exclude_posts = ("shares","Happy Birthday To My Princess",)
 logger = logging.getLogger("myblog.custom")
 
+base_raw_url = "https://raw.githubusercontent.com"
+repo_url = "/chengcx1019/universe/master/writing/"
 
-# Create your views here.
-def home(request,page_html='newlayout/index.html',page=''):
-    args = dict()
-    args['blogposts'] = BlogPost.objects.exclude(title__in=exclude_posts)
-    args['blogpostsnum'] = len(args['blogposts'])
-    max_page = ceil(len(args['blogposts']) / 3)
-    if page and int(page) < 2:  # /0, /1 -> /
-        return redirect("/")
-    else:
-        page = int(page) if (page and int(page) > 0) else 1
-        args['page'] = page
-        args['prev_page'] = page + 1 if page < max_page else None
-        args['newer_page'] = page - 1 if page > 1 else None
-        # as template slice filter, syntax: list|slice:"start:end"
-        args['sl'] = str(3 * (page - 1)) + ':' + str(3 * (page - 1) + 3)
-        args['max_page'] = max_page
-        return render(request, 'blog_api/' + page_html, args)
+METHOD_GET='GET'
+METHOD_POST='POST'
 
-def profile(request):
-    return home(request,page_html='newlayout/profile.html')
+try:
+    pool = redis.ConnectionPool(max_connections=5, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
 
-def blogpost(request, slug, post_id):
-    try:
-        current_page = request.GET["current_page"]
-    except:
-        current_page = None
-    try:
-        tag = request.GET["tag"]
-    except:
-        tag = None
-    args = {'blogpost': get_object_or_404(BlogPost, pk=post_id)}
-    args['current_page'] = current_page
-    args['tag'] = tag
-    return render(request, 'css3template_blog/newlayout/blogpost.html', args)
+    cache = redis.StrictRedis(connection_pool=pool)
+except Exception as e:
+    logger.error("connect redis error",e)
 
-def tagdisplay(request, tag, page=''):
-    args = dict()
-    logger.log(level=logging.INFO, msg="{tag}".format(tag=tag))
-    args['tag'] = tag
-    args['blogposts'] = BlogPost.objects.filter(tags__name__in=[tag,])
-    args['blogpostsnum'] = len(args['blogposts'])
-    max_page = ceil(len(args['blogposts']) / 3)
-    if (page and int(page) < 2) or (page and int(page) > max_page):  # /0, /1 -> /
-        return redirect(reverse('tagdisplay',kwargs={'tag':tag}))
-    else:
-        page = int(page) if (page and int(page) > 0) else 1
-        args['page'] = page
-        args['prev_page'] = page + 1 if page < max_page else None
-        args['newer_page'] = page - 1 if page > 1 else None
-        # as template slice filter, syntax: list|slice:"start:end"
-        args['sl'] = str(3 * (page - 1)) + ':' + str(3 * (page - 1) + 3)
-        args['max_page'] = max_page
-    return render(request, 'css3template_blog/newlayout/tagdisplay.html', args)
-
-def archive(request):
-    args = dict()
-    blogposts = BlogPost.objects.exclude(title__in=exclude_posts)
-
-    def get_sorted_posts(category):
-        posts_by_year = defaultdict(list)
-        posts_of_a_category = blogposts.filter(category=category)  # already sorted by pub_date
-        for post in posts_of_a_category:
-            year = post.pub_date.year
-            posts_by_year[year].append(post)  # {'2013':post_list, '2014':post_list}
-        posts_by_year = sorted(posts_by_year.items(), reverse=True)  # [('2014',post_list), ('2013',post_list)]
-        return posts_by_year
-
-    args['data'] = [
-        ('ml', get_sorted_posts(category="ml")),
-        ('ani', get_sorted_posts(category="ani")),
-        ('programming', get_sorted_posts(category="programming")),
-        ('su', get_sorted_posts(category="su")),
-        ('oth', get_sorted_posts(category="oth")),
-    ]
-    return render(request, 'css3template_blog/newlayout/archive.html', args)
-
-
-def about(request):
-    the_about_post = get_object_or_404(BlogPost, title="about")
-    args = {"about": the_about_post}
-    return render(request, 'css3template_blog/about.html', args)
-
-
-def projects(request):
-    # use markdown to show projects
-    the_projects_post = get_object_or_404(BlogPost, title="projects")
-    args = {"projects": the_projects_post}
-    return render(request, 'css3template_blog/projects.html', args)
-
-
-def shares(request):
-    # use markdown to show talks, could be changed if need better formatting
-    the_talks_post = get_object_or_404(BlogPost, title="shares")
-    args = {"shares": the_talks_post}
-    return render(request, 'css3template_blog/newlayout/share.html', args)
-
-
-def contact(request):
-    html = "<meta http-equiv=\"refresh\" content=\"3;url=" \
-           "/\">Under Development. Will return to homepage."
-    return HttpResponse(html)
-
-
-def article(request, freshness):
-    """ redirect to article accroding to freshness, latest->oldest:freshness=1->N """
-    if freshness.isdigit():
-        try:
-            article_url = BlogPost.objects.all()[int(freshness) - 1].get_absolute_url()
-            return redirect(article_url)
-        except IndexError:
-            raise Http404
-        except AssertionError:  # freshness=0
-            raise Http404
-    else:
-        return redirect('/')
 
 def happy_birthday(request):
     args = dict()
@@ -168,7 +70,7 @@ def entire_blogpost(blogpost):
     return blogpost_json
 
 
-def split_page(args, blogposts, page):
+def split_page(args, page):
     max_page = ceil(len(args['blogposts']) / 3)
     page = int(page) if (page and int(page) > 0) else 1
     args['page'] = page
@@ -180,44 +82,84 @@ def split_page(args, blogposts, page):
 
 
 def api_allblogs(request, page=''):
+    blogposts_cache_key, args_str = get_cache_result_by_key("ALL")
+    if args_str:
+        args = json.loads(args_str)
+        split_page(args, page)
+        return JsonResponse(args)
     args = dict()
-
-    blogposts = BlogPost.objects.exclude(title__in=exclude_posts)
+    split_page
+    blogposts = get_all_blogposts()
     args_generator(args, blogposts)
 
     if page and int(page) < 2:  # /0, /1 -> /
         return redirect("/blog/api/allblogs/")
     else:
-        split_page(args, blogposts, page)
-        # return render(request, 'blog_api/' + page_html, args)
+        split_page(args, page)
+
+        try:
+            cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+        except Exception as e:
+            logger.warn("set tag cache fail", e)
         return JsonResponse(args)
 
 
+def get_cache_result_by_key(key):
+    all_blogposts_cache_key = generate_cache_key(key)
+    args_str=None
+    try:
+        args_str = cache.get(all_blogposts_cache_key)
+    except Exception as e:
+        logger.info("get cache error")
+    return all_blogposts_cache_key, args_str
+
+
 def api_tagblog(request, tag, page=''):
+    blogposts_cache_key, args_str = get_cache_result_by_key(tag)
+    if args_str:
+        return JsonResponse(json.loads(args_str))
     args = dict()
-    print(tag)
     args['tag'] = tag
-    blogposts = BlogPost.objects.filter(tags__name__in=[tag, ])
+    blogposts = BlogPost.objects.filter(tags__name__in=[tag, ]).filter(show=1)
     args_generator(args, blogposts)
 
     if page and int(page) < 2:  # /0, /1 -> /
         return redirect(reverse('api_tag', kwargs={'tag': tag}))
     else:
-        split_page(args, blogposts, page)
-        # return render(request, 'blog_api/' + page_html, args)
+        split_page(args, page)
+        try:
+            cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+        except Exception as e:
+            logger.warn("set tag cache fail", e)
         return JsonResponse(args)
 
 
 def api_blogpost(request, slug, post_id):
+    blogpost_cache_key = generate_cache_key_id("BLOG", post_id)
+    args_str =None
+    try:
+        args_str = cache.get(blogpost_cache_key)
+    except Exception as e:
+        logger.info("get blogpost cache error:{blog_id}".format(blog_id=post_id))
+    if args_str:
+        return JsonResponse(json.loads(args_str))
+
     blogpost = get_object_or_404(BlogPost, pk=post_id)
+
     blogpost_json = entire_blogpost(blogpost)
+
     args = {'blogpost': blogpost_json}
+    cache.set(blogpost_cache_key, json.dumps(args, ensure_ascii=False))
     return JsonResponse(args)
 
 
 def api_archive(request):
+    blogposts_cache_key, args_str = get_cache_result_by_key("ARCHIVE")
+    if args_str:
+        return JsonResponse(json.loads(args_str))
+
     args = dict()
-    blogposts = BlogPost.objects.exclude(title__in=exclude_posts)
+    blogposts = get_all_blogposts()
 
     def get_sorted_posts(category):
         posts_by_year = defaultdict(list)
@@ -231,12 +173,18 @@ def api_archive(request):
 
     args['data'] = [
         ('programming', get_sorted_posts(category="programming")),
-        ('ani', get_sorted_posts(category="ani")),
         ('ml', get_sorted_posts(category="ml")),
         ('su', get_sorted_posts(category="su")),
         ('oth', get_sorted_posts(category="oth")),
+        ('ani', get_sorted_posts(category="ani")),
     ]
+    cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
     return JsonResponse(args)
+
+
+
+def get_all_blogposts():
+    return BlogPost.objects.exclude(title__in=exclude_posts).filter(show=1)
 
 
 def api_shares(request):
@@ -246,50 +194,183 @@ def api_shares(request):
     return JsonResponse(args)
 
 
-base_raw_url = "https://raw.githubusercontent.com"
-repo_url = "/chengcx1019/architecture/master/writing/"
-
-
+@csrf_exempt
 def api_blog_save(request):
     args = dict()
-    if request.method == "GET":
-        params = request.GET
+    if request.method == METHOD_POST:
+        data = get_post_body(request)
         blog = BlogPost()
 
-        blog.title = params.get("title", "")
-        blog.category = params.get("category")
-        repo_md_file = params.get("remote_source")
-        blog.remote_source = repo_md_file
-        blog.body = getRemoteSource(repo_md_file)
-        save_blogpost(blog)
+        repo_md_file = data.get("remote_source")
+        blog_res = BlogPost.objects.filter(remote_source=repo_md_file)
+        if len(blog_res)>0:
+            args["result"] = "fail"
+            args["desc"] = "blog with same remote source already existed"
+            return JsonResponse(args)
 
-        args["result"] = "success"
+        blog.title = data.get("title", "")
+        blog.category = data.get("category", "programming")
+
+        blog.remote_source = repo_md_file
+        blog.body = get_remote_source(repo_md_file)
+        blog.show=1
+        try:
+            save_blogpost(blog)
+            args["result"] = "success"
+            args['pk']=blog.pk
+            tag = data.get("tag", "start_up")
+            list(map(blog.tags.add, tag.split(',')))
+            remove_when_save(tag)
+        except Exception as e:
+            logger.info(e)
+            description = "save blog body fail, remote_source:{repo_md_file}, check character first"\
+                .format(repo_md_file=repo_md_file)
+            logger.warn(description)
+            args["result"] = "fail"
+            args["desc"] = description
+        return JsonResponse(args)
+
+
+@csrf_exempt
+def update_blog_properties_pk(request):
+    if request.method == METHOD_POST:
+        data = get_post_body(request)
+        pk = data.get('pk', None)
+        blog_res = BlogPost.objects.filter(pk=pk)
+        args =blog_update_internal(blog_res, data)
+        if 'fail' == args['result']:
+            args['desc'] = 'please check pk'
+        return JsonResponse(args)
+
+
+@csrf_exempt
+def update_blog_properties_source(request):
+    if request.method == METHOD_POST:
+        data = get_post_body(request)
+        repo_md_file = data.get('remote_source')
+        blog_res = BlogPost.objects.filter(remote_source=repo_md_file)
+        args =blog_update_internal(blog_res, data)
         return JsonResponse(args)
 
 
 def api_blog_trigger(request):
     # equal to update
     args = dict()
-    if request.method == "GET":
+    if request.method == METHOD_GET:
         params = request.GET
         repo_md_file = params.get("remote_source")
         blog_res = BlogPost.objects.filter(remote_source=repo_md_file)
         if (len(blog_res)) > 0:
             blog = blog_res[0]
-            blog.body = getRemoteSource(repo_md_file)
-            blog.remote_source = "test update"
-            save_blogpost(blog)
-            args["result"] = "success"
+            blog.body = get_remote_source(repo_md_file)
+            blog.remote_source = repo_md_file
+            try:
+                save_blogpost(blog)
+                remove_when_update(blog.tags.all(), blog.pk)
+                args["result"] = "success"
+            except Exception as e:
+                description = "update blog body fail, remote_source:{repo_md_file}, check character first".format(
+                    repo_md_file)
+                logger.warn(description)
+                args["result"] = "fail"
+                args["desc"] = description
+                return JsonResponse(args)
         else:
             args["result"] = "fail"
             args["desc"] = "no such blog with remote source {repo_md_file}".format(repo_md_file=repo_md_file)
         return JsonResponse(args)
 
 
-def getRemoteSource(repo_md_file):
+def remove_when_update(tags, post_id):
+    try:
+        all_blogposts_cache_key = generate_cache_key("ALL")
+        cache.delete(all_blogposts_cache_key)
+        blogpost_cache_key = generate_cache_key_id("BLOG", post_id)
+        cache.delete(blogpost_cache_key)
+        remove_tag_cache(tags)
+    except Exception as e:
+        logger.info(e)
+
+
+def remove_tag_cache(tags):
+    for tag in json.loads(serializers.serialize("json", tags)):
+        try:
+            tag_name = tag.get("fields").get("name")
+            cache.delete(generate_cache_key(tag_name))
+        except Exception as e:
+            logger.info(tag, e)
+
+
+def get_remote_source(repo_md_file):
     raw_url = base_raw_url + repo_url + repo_md_file
     res = requests.get(raw_url)
     return res.text.strip()
+
+
+def remove_when_save(tag):
+    try:
+        all_blogposts_cache_key = generate_cache_key("ALL")
+        cache.delete(all_blogposts_cache_key)
+        archive_blogposts_cache_key = generate_cache_key("ARCHIVE")
+        cache.delete(archive_blogposts_cache_key)
+        for t in tag.split(','):
+            cache.delete(generate_cache_key(t))
+    except Exception as e:
+        logger.info(e)
+
+
+def get_post_body(request):
+    data = json.loads(request.body, encoding='utf-8')
+    return data
+
+
+def blog_update_internal(blog_res, data)->dict:
+    args = dict()
+    if len(blog_res) == 0:
+        args["result"] = "fail"
+        args["desc"] = "blog  not exist, please check"
+        return  args
+    blog = blog_res[0]
+    blog_properties_update_process(blog, data)
+    try:
+        save_blogpost(blog)
+        remove_when_update(blog.tags.all(), blog.pk)
+        args['key'] = blog.pk
+        args["result"] = "success"
+    except Exception as e:
+        logger.error(e)
+        description = "update blog properties fail, check sentry for detail"
+        logger.warn(description, e)
+        args["result"] = "fail"
+        args["desc"] = description
+    return args
+
+
+def blog_properties_update_process(blog:BlogPost, data):
+    title = data.get('title', None)
+    if title is not None:
+        blog.title = title
+    show = data.get('show', None)
+    if show is not None:
+        blog.show = show
+    pub_date_timestamp = data.get('pub_date', None)
+    if pub_date_timestamp:
+        blog.pub_date = datetime.fromtimestamp(pub_date_timestamp, timezone.utc)
+    category = data.get('category', None)
+    if category is not None:
+        blog.category = category
+
+    repo_md_file = data.get("remote_source",None)
+    if repo_md_file is not None:
+        blog.remote_source = repo_md_file
+    tags = data.get('tags', None)
+    if tags is not None:
+        tags = tags.split(',')
+        if len(tags) > 0:
+            remove_tag_cache(blog.tags.all())
+            blog.tags.clear()
+            for tag in tags:
+                blog.tags.add(tag)
 
 
 def save_blogpost(obj):

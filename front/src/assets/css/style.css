@@ -30,7 +30,7 @@ a {
 }
 
 a:active,a:hover {
-	outline: 0
+  outline: 0;
 }
 
 abbr[title] {
@@ -387,10 +387,10 @@ input,button,select,textarea {
 }
 
 a {
-	color: #212226;
+  color: indianred;
 	text-decoration: none;
 	font-weight: 400;
-	transition: all ease-out 0.2s
+  transition: all ease-out 0.2s
 }
 
 a:hover,a:focus {
@@ -853,11 +853,11 @@ img[src$="#full"] {
 
 #blog-header:after {
 	position: absolute;
-	width: 32em;
+  width: 48em;
 	height: 1px;
 	left: 50%;
 	bottom: 0;
-	margin-left: -16em;
+  margin-left: -24em;
 	content: '';
 	background: #e5e4e1
 }
@@ -987,7 +987,7 @@ img[src$="#full"] {
 }
 
 .inner {
-	max-width: 32em;
+  max-width: 48em;
 	margin: 0 auto;
 	padding: 0 2em
 }
@@ -1312,11 +1312,11 @@ img[src$="#full"] {
 
 .container .post:after {
 	position: absolute;
-	width: 32em;
+  width: 48em;
 	height: 1px;
 	left: 50%;
 	bottom: 0;
-	margin-left: -16em;
+  margin-left: -24em;
 	content: '';
 	background: #e5e4e1
 }
@@ -1863,11 +1863,11 @@ img[src$="#full"] {
 
 .pagination:after {
 	position: absolute;
-	width: 32em;
+  width: 48em;
 	height: 1px;
 	left: 50%;
 	bottom: 0;
-	margin-left: -16em;
+  margin-left: -24em;
 	content: '';
 	background: #e5e4e1
 }

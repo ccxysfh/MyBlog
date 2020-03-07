@@ -12,10 +12,17 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import logging
 import os
 import sys
-
 from time import strftime
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 from . import choose_settings
+
+sentry_sdk.init(
+    dsn="https://08f1cb3d924a42fea2f52cee856ccb45@sentry.io/1495021",
+    integrations=[DjangoIntegration()]
+)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
@@ -111,6 +118,7 @@ INSTALLED_APPS = [
     'taggit',
     'computer_science_flash_cards',
     'django_extensions',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -237,4 +245,11 @@ NOTEBOOK_ARGUMENTS = [
     '--ip', '0.0.0.0',
     '--port', '9101',
 ]
+CRONJOBS = [
+    ('*/15 * * * *', "config.cronjob.trigger_update_blog"),
+]
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+
 SECURE_SSL_REDIRECT = True

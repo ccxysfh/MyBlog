@@ -9,7 +9,7 @@
       </div>
     </header>
 
-    <blogpostpanel :blogpost="blogpost">
+    <blogpostpanel v-if="blogpost" :blogpost="blogpost">
     </blogpostpanel>
     <div class="inner">
       <div  id="disqus_thread"></div>
@@ -39,17 +39,17 @@ export default {
     this.disque()
   },
   methods: {
-    getBlogPost () {
+    async getBlogPost () {
       let url = this.$route.params.url
       let reqUrl = this.$store.state.baseUrl + url
       console.log(reqUrl)
       let self = this
-      this.$http.get(reqUrl)
-        .then((response) => {
-          var res = JSON.parse(response.bodyText)
-          self.blogpost = res.blogpost
-          console.log(self.blogpost)
-        })
+      await this.$http.get(reqUrl)
+          .then((response) => {
+            var res = JSON.parse(response.bodyText)
+            self.blogpost = res.blogpost
+            console.log(self.blogpost)
+          })
     },
     disque () {
       /**

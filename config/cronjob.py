@@ -6,10 +6,13 @@
 @mail: chengcx1019@gmail.com
 @time: 2019-05-14 14:25
 """
-import os
 
 import requests
 from lxml import html
+
+from blog_api.models import BlogPost
+from blog_api.views import get_remote_source, save_blogpost,remove_when_update
+from config.settings import logger
 
 ext = ".md"
 
@@ -19,7 +22,7 @@ def getXpathTree(url):
     return tree
 
 base_url = "https://github.com"
-url = "https://github.com/chengcx1019/architecture/blob/master/writing/"
+url = "https://github.com/chengcx1019/universe/blob/master/writing/"
 base_raw_url = "https://raw.githubusercontent.com"
 
 def traverse_url(url):
@@ -34,7 +37,28 @@ def traverse_url(url):
     return md_files
 
 
-# 拉取所有的blogpost，更具扩展url更新body，每次获取display_html时，都从body重新生成
+def raw_url(md_file):
+    path_segs = md_file.split('/')
+    path_segs.remove('blob')
+    return '/'.join(path_segs)
+
+
+def get_raw_mds(md_files):
+    return list(map(raw_url, md_files))
+
+
+def trigger_update_blog():
+    blogposts = BlogPost.objects.all()
+    for blogpost in blogposts:
+        remote_source = blogpost.remote_source
+        if remote_source is not None and remote_source != "":
+            try:
+                blogpost.body = get_remote_source(remote_source)
+                save_blogpost(blogpost)
+                remove_when_update(blogpost.tags.all(), blogpost.pk)
+            except Exception as e:
+                logger.warn("blogpost:{id} update from {remote_source} fail".format(id=blogpost.id,
+                                                                                    remote_source=remote_source))
 
 if __name__ == '__main__':
     pass

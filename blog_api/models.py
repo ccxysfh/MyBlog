@@ -40,9 +40,9 @@ class BlogPost(models.Model):
 
     CATEGORY_CHOICES = (
         ('ml', 'Machine Learning'),
-        ('ani', 'Animation'),
-        ('su', 'Summary'),
         ('programming', 'Programming'),
+        ('su', 'Summary'),
+        ('ani', 'Animation'),
         ('acg', 'animation & summary & machine learning'),
         ('nc', 'No Category'),
         ('oth', 'Others'),
@@ -59,6 +59,7 @@ class BlogPost(models.Model):
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
     description = models.TextField(blank=True)
     remote_source = models.CharField(max_length=100, blank=True)
+    show = models.IntegerField(blank=True,default=0)
     tags = TaggableManager()
 
     def __str__(self):
@@ -83,11 +84,7 @@ class BlogPost(models.Model):
     def save_body_to_html(self):
         html = markdown2.markdown(self.body,
                                   extras=["fenced-code-blocks", "tables", 'toc', 'code-friendly'])
-        try:
-            toc = html.toc_html
-            html = toc + html
-        except:
-            pass
+        
         self.html_file.save(self.title + '.html',
                             ContentFile(html.encode('utf-8')), save=False)
         self.html_file.close()
@@ -107,6 +104,10 @@ class BlogPost(models.Model):
     def get_api_absolute_url(self):
         return reverse('api_blogpost_slug_id',
                        kwargs={'slug': self.slug, 'post_id': self.id})
+
+    def get_feed_url(self):
+        api_url = reverse('api_blogpost_slug_id', kwargs={'slug': self.slug, 'post_id': self.id})
+        return os.path.join('/postDetail',api_url.replace('/','%2F'))
 
 
 @receiver(pre_delete, sender=BlogPost)

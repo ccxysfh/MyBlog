@@ -3,6 +3,7 @@ import logging
 import platform
 from collections import defaultdict
 from math import ceil
+from datetime import datetime, timezone
 
 import requests
 from django.core import serializers
@@ -19,9 +20,13 @@ from .cache import generate_cache_key, generate_cache_key_id
 exclude_posts = ("shares","Happy Birthday To My Princess",)
 logger = logging.getLogger("myblog.custom")
 
-pool = redis.ConnectionPool(max_connections=5, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+try:
+    pool = redis.ConnectionPool(max_connections=5, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
 
-cache = redis.StrictRedis(connection_pool=pool)
+    cache = redis.StrictRedis(connection_pool=pool)
+except Exception as e:
+    logger.error("connect redis error",e)
+
 
 def happy_birthday(request):
     args = dict()
@@ -84,7 +89,6 @@ def api_allblogs(request, page=''):
         return redirect("/blog/api/allblogs/")
     else:
         split_page(args, page)
-        # return render(request, 'blog_api/' + page_html, args)
         cache.set(blogposts_cache_key, json.dumps(args,ensure_ascii=False))
         return JsonResponse(args)
 
@@ -118,6 +122,7 @@ def api_tagblog(request, tag, page=''):
 
 def api_blogpost(request, slug, post_id):
     blogpost_cache_key = generate_cache_key_id("BLOG", post_id)
+    args_str =None
     try:
         args_str = cache.get(blogpost_cache_key)
     except Exception as e:
@@ -251,22 +256,106 @@ def api_blog_trigger(request):
 
 
 def remove_when_update(tags, post_id):
-    all_blogposts_cache_key = generate_cache_key("ALL")
-    cache.delete(all_blogposts_cache_key)
-    blogpost_cache_key = generate_cache_key_id("BLOG", post_id)
-    cache.delete(blogpost_cache_key)
+    try:
+        all_blogposts_cache_key = generate_cache_key("ALL")
+        cache.delete(all_blogposts_cache_key)
+        blogpost_cache_key = generate_cache_key_id("BLOG", post_id)
+        cache.delete(blogpost_cache_key)
+        remove_tag_cache(tags)
+    except Exception as e:
+        logger.info(e)
+
+
+def remove_tag_cache(tags):
     for tag in json.loads(serializers.serialize("json", tags)):
         try:
             tag_name = tag.get("fields").get("name")
             cache.delete(generate_cache_key(tag_name))
         except Exception as e:
-            logger.info(tag,e)
+            logger.info(tag, e)
 
 
 def get_remote_source(repo_md_file):
     raw_url = base_raw_url + repo_url + repo_md_file
     res = requests.get(raw_url)
     return res.text.strip()
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def update_blog_properties_source(request):
+    if request.method == "POST":
+        data = get_post_body(request)
+        repo_md_file = data.get('remote_source')
+        blog_res = BlogPost.objects.filter(remote_source=repo_md_file)
+        args =blog_update_internal(blog_res, data)
+        return JsonResponse(args)
+
+
+def get_post_body(request):
+    data = json.loads(request.body, encoding='utf-8')
+    return data
+
+
+@csrf_exempt
+def update_blog_properties_pk(request):
+    if request.method == "POST":
+        data = get_post_body(request)
+        pk = data.get('pk', None)
+        blog_res = BlogPost.objects.filter(pk=pk)
+        args =blog_update_internal(blog_res, data)
+        if 'fail' == args['result']:
+            args['desc'] = 'please check pk'
+        return JsonResponse(args)
+
+
+def blog_update_internal(blog_res, data)->dict:
+    args = dict()
+    if len(blog_res) == 0:
+        args["result"] = "fail"
+        args["desc"] = "blog  not exist, please check"
+        return  args
+    blog = blog_res[0]
+    blog_properties_update_process(blog, data)
+    try:
+        save_blogpost(blog)
+        remove_when_update(blog.tags.all(), blog.pk)
+        args['key'] = blog.pk
+        args["result"] = "success"
+    except Exception as e:
+        logger.error(e)
+        description = "update blog properties fail, check sentry for detail"
+        logger.warn(description, e)
+        args["result"] = "fail"
+        args["desc"] = description
+    return args
+
+
+def blog_properties_update_process(blog:BlogPost, data):
+    title = data.get('title', None)
+    if title is not None:
+        blog.title = title
+    show = data.get('show', None)
+    if show is not None:
+        blog.show = show
+    pub_date_timestamp = data.get('pub_date', None)
+    if pub_date_timestamp:
+        blog.pub_date = datetime.fromtimestamp(pub_date_timestamp, timezone.utc)
+    category = data.get('category', None)
+    if category is not None:
+        blog.category = category
+
+    repo_md_file = data.get("remote_source",None)
+    if repo_md_file is not None:
+        blog.remote_source = repo_md_file
+    tags = data.get('tags', None)
+    if tags is not None:
+        tags = tags.split(',')
+        if len(tags) > 0:
+            remove_tag_cache(blog.tags.all())
+            blog.tags.clear()
+            for tag in tags:
+                blog.tags.add(tag)
 
 
 def save_blogpost(obj):

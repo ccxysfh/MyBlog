@@ -15,4 +15,6 @@ urlpatterns = [
     path('api/shares', views.api_shares, name='api_shares'),
     path('api/save', views.api_blog_save, name='api_save'),
     path('api/trigger', views.api_blog_trigger, name='api_trigger'),
+    path('api/update-properties-source', views.update_blog_properties_source, name='api_update_properties_source'),
+    path('api/update-properties-pk', views.update_blog_properties_pk, name='api_update_properties_pk'),
 ]

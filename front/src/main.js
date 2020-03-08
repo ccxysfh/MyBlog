@@ -11,7 +11,7 @@ import VueResource from 'vue-resource'
 import Icon from 'vue-awesome/components/Icon'
 
 import VmBackTop from 'vue-multiple-back-top'
-
+import echarts from 'echarts'
 
 import './assets/css/style.css'
 import './assets/js/script.js'
@@ -26,6 +26,7 @@ var vueFilter = require('vue-filter')
 
 Vue.use(VueResource)
 Vue.use(vueFilter)
+Vue.use(echarts)
 
 Vue.component('icon', Icon)
 Vue.component(VmBackTop.name, VmBackTop)

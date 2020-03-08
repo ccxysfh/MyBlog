@@ -30,7 +30,6 @@
     </section>
     <vm-back-top :duration="500"></vm-back-top>
     <remote-js src="//www.google-analytics.com/analytics.js"></remote-js>
-    <!--<remote-js  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_HTML"></remote-js>-->
   </div>
 
 </template>

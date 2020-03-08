@@ -39,8 +39,11 @@ def happy_birthday(request):
     args = dict()
     tag = "HappyBirthday"
     args['tag'] = tag
-    args['blogposts'] = BlogPost.objects.filter(tags__name__in=[tag, ])
-    return render(request, 'css3template_blog/newlayout/birthday.html', args)
+    blog_set = BlogPost.objects.filter(tags__name__in=[tag, ])
+    if len(blog_set)>0:
+        blogpost_json = entire_blogpost(blog_set[0])
+        args['blogpost'] = blogpost_json
+    return JsonResponse(args)
 
 
 # api version
@@ -149,7 +152,10 @@ def api_blogpost(request, slug, post_id):
     blogpost_json = entire_blogpost(blogpost)
 
     args = {'blogpost': blogpost_json}
-    cache.set(blogpost_cache_key, json.dumps(args, ensure_ascii=False))
+    try:
+        cache.set(blogpost_cache_key, json.dumps(args, ensure_ascii=False))
+    except Exception as e:
+        logger.warn("set blog cache fail", e)
     return JsonResponse(args)
 
 
@@ -178,7 +184,12 @@ def api_archive(request):
         ('oth', get_sorted_posts(category="oth")),
         ('ani', get_sorted_posts(category="ani")),
     ]
-    cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+
+    try:
+        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+    except Exception as e:
+        logger.warn("set archive cache fail", e)
+
     return JsonResponse(args)
 
 
@@ -267,6 +278,7 @@ def api_blog_trigger(request):
             try:
                 save_blogpost(blog)
                 remove_when_update(blog.tags.all(), blog.pk)
+                args['pk']=blog.pk
                 args["result"] = "success"
             except Exception as e:
                 description = "update blog body fail, remote_source:{repo_md_file}, check character first".format(

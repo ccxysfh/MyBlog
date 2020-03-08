@@ -4,8 +4,8 @@ from blog_api import feeds
 from . import views
 
 urlpatterns = [
-    # url('^happy_birthday_to_my_princess_huyao/$', views.happy_birthday),
     path('feed', feeds.LatestBlogpostsFeed()),
+    path('api/happy_birthday_to_my_princess_huyao', views.happy_birthday),
     path('api/allblogs/', views.api_allblogs),
     path('api/allblogs/<str:page>', views.api_allblogs),
     path('api/tag/<str:tag>,<str:page>', views.api_tagblog, name='api_tag'),

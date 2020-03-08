@@ -11,6 +11,7 @@ import shares from '../views/Shares'
 import archive from '../views/Archive'
 import postDetail from '../views/PostDetail'
 import tagContent from '../views/TagContent'
+import birthday from '../views/HappyBirthday'
 
 Vue.use(Router)
 
@@ -60,6 +61,11 @@ export const constantRouterMap=[
           path: '/profile',
           name: 'profile',
           component: profile
+        },
+        {
+          path: '/happy_birthday_to_my_princess_huyao',
+          name: 'birthday',
+          component: birthday
         },
       ]
     }

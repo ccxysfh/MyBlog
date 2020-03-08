@@ -15,8 +15,11 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "echarts": "^4.6.0",
+    "express": "^4.17.1",
     "vue": "^2.5.2",
     "vue-awesome": "^3.5.3",
+    "vue-echarts": "^5.0.0-beta.0",
     "vue-filter": "^0.2.5",
     "vue-multiple-back-top": "^1.0.2",
     "vue-resource": "^1.5.1",

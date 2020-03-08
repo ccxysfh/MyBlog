@@ -63,7 +63,7 @@ export const constantRouterMap=[
           component: profile
         },
         {
-          path: '/happy_birthday_to_my_princess_huyao',
+          path: '/blog/happy_birthday_to_my_princess_huyao',
           name: 'birthday',
           component: birthday
         },

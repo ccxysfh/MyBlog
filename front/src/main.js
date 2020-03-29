@@ -14,6 +14,8 @@ import VmBackTop from 'vue-multiple-back-top'
 import echarts from 'echarts'
 
 import './assets/css/style.css'
+import './assets/css/pygments-css/colorful.css';
+
 import './assets/js/script.js'
 import './assets/js/libs//jquery-1.11.3.min.js'
 import './assets/js/libs/plantuml-encoder.min.js'

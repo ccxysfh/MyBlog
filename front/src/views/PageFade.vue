@@ -1,16 +1,22 @@
 <template>
   <nav class="pagination" role="pagination">
     <div class="inner">
-      <div v-if="tag">
+      <div v-if="pageType==='tag'">
         <router-link v-if="pagecontrol.newerPage" class="pagination-next" :to="{ name: 'tagContent', params: { tag: tag, topage: pagecontrol.newerPage }}"><i class="ic ic-arrow-left"></i> <span class="pagination-label">Newer Posts</span></router-link>
         <span class="pagination-info">Page {{ pagecontrol.page }} of {{ pagecontrol.maxPage }}</span>
         <router-link v-if="pagecontrol.prev_page" class="pagination-prev" :to="{ name: 'tagContent', params: { tag: tag, topage: pagecontrol.prev_page }}"><span class="pagination-label">Older Posts</span> <i class="ic ic-arrow-right"></i></router-link>
         <div class="clear"></div>
       </div>
-      <div v-else>
+      <div v-else-if="pageType ==='index'">
         <router-link v-if="pagecontrol.newerPage" class="pagination-next" :to="{ name: 'pageRouter', params: { topage: pagecontrol.newerPage }}"><i class="ic ic-arrow-left"></i> <span class="pagination-label">Newer Posts</span></router-link>
         <span class="pagination-info">Page {{ pagecontrol.page }} of {{ pagecontrol.maxPage }}</span>
         <router-link v-if="pagecontrol.prev_page" class="pagination-prev" :to="{ name: 'pageRouter', params: { topage: pagecontrol.prev_page }}"><span class="pagination-label">Older Posts</span> <i class="ic ic-arrow-right"></i></router-link>
+        <div class="clear"></div>
+      </div>
+      <div v-else>
+        <router-link v-if="pagecontrol.newerPage" class="pagination-next" :to="{ name: 'profile', params: { topage: pagecontrol.newerPage }}"><i class="ic ic-arrow-left"></i> <span class="pagination-label">Newer Posts</span></router-link>
+        <span class="pagination-info">Page {{ pagecontrol.page }} of {{ pagecontrol.maxPage }}</span>
+        <router-link v-if="pagecontrol.prev_page" class="pagination-prev" :to="{ name: 'profile', params: { topage: pagecontrol.prev_page }}"><span class="pagination-label">Older Posts</span> <i class="ic ic-arrow-right"></i></router-link>
         <div class="clear"></div>
       </div>
 
@@ -25,7 +31,7 @@ export default {
   name: 'page-fade',
   data () {
     return {
-      baseUrl: 'http://127.0.0.1:8000'
+      baseUrl: this.$store.state.baseUrl
     }
   },
   props: {
@@ -35,7 +41,12 @@ export default {
     },
     tag: {
       type: String
+    },
+     pageType: {
+      type: String,
+      required: true
     }
+
   }
 }
 </script>

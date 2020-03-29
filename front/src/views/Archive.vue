@@ -59,15 +59,22 @@
     }
   },
   methods: {
-    blogArchive () {
-      let reqUrl = this.$store.state.baseUrl + '/blog/api/archive'
-      // console.log(reqUrl)
-      this.$http.get(reqUrl)
-        .then((response) => {
-          var res = JSON.parse(response.bodyText)
-          console.log(res)
-          this.categoryPosts = res.data
-        })
+    async blogArchive () {
+      let archiveCache = this.$store.state.archive;
+      if (archiveCache !=null){
+        console.log("load archive cache");
+        this.categoryPosts = archiveCache.data;
+      }else{
+        let reqUrl = this.$store.state.baseUrl + '/blog/api/archive';
+        await this.$http.get(reqUrl)
+          .then((response) => {
+            var res = JSON.parse(response.bodyText);
+            console.log(res);
+            this.$store.commit('assignArchive', res);
+            this.categoryPosts = res.data
+          })
+      }
+
     }
   },
   mounted () {

@@ -22,6 +22,7 @@
           </router-view>
 
           <footer id="footer">
+<!--            邮件订阅或者点击右上角菜单RSS订阅-->
             <main-footer/>
           </footer>
         </main>
@@ -74,6 +75,13 @@ export default {
     console.log('AppLayout updated load script');
     // import('../assets/js/script.js')
   },
+  destroyed() {
+    console.log('clear cache');
+    this.$store.commit('assignAllBlogs', null);
+    this.$store.commit('assignTagContent', null);
+    this.$store.commit('assignArchive', {});
+    this.$store.commit('assignShare', null);
+  },
   methods: {
     renderGoogleAnalyse () {
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -82,7 +90,6 @@ export default {
         })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
         ga('create', 'UA-112661341-1', 'auto');
         ga('send', 'pageview');
-
     }
   }
 }

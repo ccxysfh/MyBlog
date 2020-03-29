@@ -4,6 +4,7 @@ import platform
 from collections import defaultdict
 from math import ceil
 from datetime import datetime, timezone
+from multiprocessing.dummy import Pool as ThreadPool
 
 import requests
 from django.core import serializers
@@ -29,7 +30,6 @@ METHOD_POST='POST'
 
 try:
     pool = redis.ConnectionPool(max_connections=5, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
-
     cache = redis.StrictRedis(connection_pool=pool)
 except Exception as e:
     logger.error("connect redis error",e)
@@ -48,16 +48,18 @@ def happy_birthday(request):
 
 # api version
 def args_generator(args, blogposts):
-    contents = [blogquery.display_html() for blogquery in blogposts]
-    urls = [blogquery.get_api_absolute_url() for blogquery in blogposts]
-    alltags = [blogquery.tags.all() for blogquery in blogposts]
-    bolgList = json.loads(serializers.serialize("json", blogposts))
+    blog_list = json.loads(serializers.serialize("json", blogposts))
+    def process(arg):
+        blog_query, index = arg
+        blog_list[index]['content'] = blog_query.display_html()
+        blog_list[index]['tags'] = json.loads(serializers.serialize("json", blog_query.tags.all()))
+        blog_list[index]['url'] = blog_query.get_api_absolute_url()
+    pool = ThreadPool()
+    pool.map(process, zip(blogposts,[i for i in range(len(blogposts))]))
+    pool.close()
+    pool.join()
 
-    for index in range(len(bolgList)):
-        bolgList[index]['content'] = contents[index]
-        bolgList[index]['tags'] = json.loads(serializers.serialize("json", alltags[index]))
-        bolgList[index]['url'] = urls[index]
-    args['blogposts'] = bolgList
+    args['blogposts'] = blog_list
     args['blogpostsnum'] = len(args['blogposts'])
 
 
@@ -85,26 +87,24 @@ def split_page(args, page):
 
 
 def api_allblogs(request, page=''):
+    if page and int(page) < 2:  # /0, /1 -> /
+        return redirect("/blog/api/allblogs/")
+
     blogposts_cache_key, args_str = get_cache_result_by_key("ALL")
     if args_str:
         args = json.loads(args_str)
         split_page(args, page)
         return JsonResponse(args)
+
     args = dict()
-    split_page
     blogposts = get_all_blogposts()
     args_generator(args, blogposts)
-
-    if page and int(page) < 2:  # /0, /1 -> /
-        return redirect("/blog/api/allblogs/")
-    else:
-        split_page(args, page)
-
-        try:
-            cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
-        except Exception as e:
-            logger.warn("set tag cache fail", e)
-        return JsonResponse(args)
+    split_page(args, page)
+    try:
+        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+    except Exception as e:
+        logger.warn("set tag cache fail", e)
+    return JsonResponse(args)
 
 
 def get_cache_result_by_key(key):
@@ -118,23 +118,23 @@ def get_cache_result_by_key(key):
 
 
 def api_tagblog(request, tag, page=''):
+    if page and int(page) < 2:  # /0, /1 -> /
+        return redirect(reverse('api_tag', kwargs={'tag': tag}))
     blogposts_cache_key, args_str = get_cache_result_by_key(tag)
     if args_str:
-        return JsonResponse(json.loads(args_str))
+        args = json.loads(args_str)
+        split_page(args, page)
+        return JsonResponse(args)
     args = dict()
     args['tag'] = tag
     blogposts = BlogPost.objects.filter(tags__name__in=[tag, ]).filter(show=1)
     args_generator(args, blogposts)
-
-    if page and int(page) < 2:  # /0, /1 -> /
-        return redirect(reverse('api_tag', kwargs={'tag': tag}))
-    else:
-        split_page(args, page)
-        try:
-            cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
-        except Exception as e:
-            logger.warn("set tag cache fail", e)
-        return JsonResponse(args)
+    split_page(args, page)
+    try:
+        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+    except Exception as e:
+        logger.warn("set tag cache fail", e)
+    return JsonResponse(args)
 
 
 def api_blogpost(request, slug, post_id):
@@ -229,7 +229,7 @@ def api_blog_save(request):
             save_blogpost(blog)
             args["result"] = "success"
             args['pk']=blog.pk
-            tag = data.get("tag", "start_up")
+            tag = data.get("tag", "startup")
             list(map(blog.tags.add, tag.split(',')))
             remove_when_save(tag)
         except Exception as e:

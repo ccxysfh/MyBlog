@@ -80,18 +80,8 @@
 </script>
 
 <style scoped>
-
-  /*@import "../assets/css/md_theme/ursine-polar.css";*/
-  .codehilite code, tt {
-    position: relative;
-    margin: 0 0.334em;
-    padding: 0.334em 0.667em;
-    font-family: monospace, sans-serif;
-    font-size: 1.2em;
-    white-space: pre;
-    background: #faf9f7;
-    border: 1px solid #e5e4e1;
-    top: -2px
+  .post-header {
+    margin-bottom: 25px;
   }
 
   .author-thumb {

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 # choose settings between Developement and Deploy
 
 import platform
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 node = platform.node()
 
@@ -38,6 +40,12 @@ if node in dev_machines:
     ALLOWED_HOSTS = ['*']
 else:
     print('prod')
+    sentry_sdk.init(
+        dsn="https://08f1cb3d924a42fea2f52cee856ccb45@sentry.io/1495021",
+        integrations=[DjangoIntegration()]
+    )
+    SECURE_SSL_REDIRECT = True
+
     DEBUG =True 
     DATABASES = {
         'default': {

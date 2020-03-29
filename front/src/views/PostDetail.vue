@@ -35,21 +35,33 @@ export default {
 
   },
   created () {
-    this.getBlogPost()
-    this.disque()
+    this.getBlogPost();
+    this.disque();
   },
   methods: {
     async getBlogPost () {
-      let url = this.$route.params.url
-      let reqUrl = this.$store.state.baseUrl + url
-      console.log(reqUrl)
-      let self = this
-      await this.$http.get(reqUrl)
-          .then((response) => {
-            var res = JSON.parse(response.bodyText)
-            self.blogpost = res.blogpost
-            console.log(self.blogpost)
-          })
+      let url = this.$route.params.url;
+      let pk = this.getPk(url);
+      let allBlogCache = this.$store.state.allBlogs;
+      var bloglist = allBlogCache.blogposts;
+      for (var blog of bloglist){
+        if (blog.pk === pk){
+          this.blogpost = blog;
+          console.log("load blog detail cache");
+          break
+        }
+      }
+      if(this.blogpost == null){
+        let reqUrl = this.$store.state.baseUrl + url;
+        console.log(reqUrl);
+        let self = this;
+        await this.$http.get(reqUrl)
+            .then((response) => {
+              var res = JSON.parse(response.bodyText);
+              self.blogpost = res.blogpost;
+              console.log(self.blogpost)
+            })
+      }
     },
     disque () {
       /**
@@ -67,6 +79,11 @@ export default {
       s.setAttribute('data-timestamp', +new Date());
       (d.head || d.body).appendChild(s);
       })();
+    },
+    getPk(url){
+      let eleList = url.split(',');
+      let pkStr = eleList[eleList.length-1];
+      return parseInt(pkStr.substring(0, pkStr.indexOf("/")))
     }
   }
 }

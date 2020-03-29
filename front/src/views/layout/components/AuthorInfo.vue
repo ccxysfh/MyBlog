@@ -107,9 +107,10 @@ export default {
   box-sizing: border-box;
   display: block;
   position: absolute;
-  top: 20px;
+  top: 50%;
   left: 50%;
-  margin-left: -40px;
+  margin-left: -60px;
+  margin-top: -180px;
   width: 120px;
   height: 120px;
   border-radius: 100%;
@@ -124,80 +125,6 @@ export default {
 .author-profile a:hover {
   color: #0b97c4;
 }
-
-
-/*!*addition*!*/
-/*.author-profile {*/
-    /*padding: 0 15px 5rem 15px;*/
-    /*border-bottom: #EBF2F6 1px solid;*/
-    /*text-align: center;*/
-/*}*/
-
-/*!* Add a little circle in the middle of the border-bottom *!*/
-/*.author-profile:after {*/
-    /*display: block;*/
-    /*content: "";*/
-    /*width: 7px;*/
-    /*height: 7px;*/
-    /*border: #E7EEF2 1px solid;*/
-    /*position: absolute;*/
-    /*bottom: -5px;*/
-    /*left: 50%;*/
-    /*margin-left: -5px;*/
-    /*background: #FFF;*/
-    /*border-radius: 100%;*/
-    /*box-shadow: #FFF 0 0 0 5px;*/
-/*}*/
-
-/*.author-profile .author-image {*/
-    /*position: relative;*/
-    /*left: auto;*/
-    /*top: auto;*/
-    /*width: 120px;*/
-    /*height: 120px;*/
-    /*padding: 3px;*/
-    /*margin: -100px auto 0 auto;*/
-    /*box-shadow: none;*/
-/*}*/
-
-/*.author-profile .author-meta {*/
-    /*margin: 2rem 0;*/
-    /*font-family: "Merriweather", serif;*/
-    /*letter-spacing: 0.01rem;*/
-    /*font-size: 1.7rem;*/
-/*}*/
-/*.author-meta span {*/
-    /*display: inline-block;*/
-    /*margin: 0 2rem 1rem 0;*/
-    /*word-wrap: break-word;*/
-/*}*/
-/*.author-meta a {*/
-    /*text-decoration: none;*/
-/*}*/
-
-/*!* Turn off meta for page2+ to make room for extra*/
-   /*pagination prev/next links *!*/
-/*.paged .author-profile .author-meta {*/
-    /*display: none;*/
-/*}*/
-
-
-/*.author-profile {*/
-    /*padding-bottom: 4rem;*/
-/*}*/
-
-/*.author-profile .author-bio {*/
-    /*font-size: 1.6rem;*/
-/*}*/
-
-/*.author-meta span {*/
-    /*display: block;*/
-    /*margin: 1.5rem 0;*/
-/*}*/
-/*.author-profile .author-meta span {*/
-    /*font-size: 1.6rem;*/
-/*}*/
-
 
 img {
     border: 0;

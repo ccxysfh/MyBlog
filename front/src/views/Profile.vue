@@ -22,8 +22,8 @@ export default {
   },
   data () {
     return {
-      blogpostsnum: 0,
-      func: 'index'
+      blogpostsnum: this.$store.state.blogpostsnum,
+      func: 'profile'
     }
   },
   created () {

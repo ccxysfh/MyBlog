@@ -30,15 +30,22 @@ export default {
     }
   },
   methods: {
-    getShares () {
-      let reqUrl = this.$store.state.baseUrl + '/blog/api/shares'
-      // console.log(reqUrl)
-      this.$http.get(reqUrl)
-        .then((response) => {
-          var res = JSON.parse(response.bodyText)
-          this.shares = res.shares
-          console.log(res)
-        })
+    async getShares () {
+      let share = this.$store.state.share;
+      if(share !=null){
+        this.shares = share;
+        console.log("load shares cache")
+      }else{
+        let reqUrl = this.$store.state.baseUrl + '/blog/api/shares';
+        // console.log(reqUrl)
+        await this.$http.get(reqUrl)
+          .then((response) => {
+            var res = JSON.parse(response.bodyText);
+            this.shares = res.shares;
+            this.$store.commit('assignShare', res.shares);
+            console.log(res)
+          })
+      }
     }
   },
   created () {

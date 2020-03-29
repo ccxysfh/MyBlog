@@ -58,7 +58,7 @@ export const constantRouterMap=[
           props: true
         },
         {
-          path: '/profile',
+          path: '/profile/:topage?',
           name: 'profile',
           component: profile
         },

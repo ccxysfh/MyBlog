@@ -571,6 +571,7 @@ code,tt {
 	font-family: monospace, sans-serif;
 	font-size: 0.75em;
 	white-space: pre;
+  color: #000000;
 	background: #faf9f7;
 	border: 1px solid #e5e4e1;
 	top: -2px
@@ -609,7 +610,7 @@ pre .lines .line {
 	color: #45484d
 }
 
-pre code,pre tt {
+pre code,pre tt{
 	display: block;
 	position: static;
 	top: auto;
@@ -617,13 +618,12 @@ pre code,pre tt {
 	padding: 1.334em;
 	overflow-x: auto;
 	font-size: 0.75em;
-	line-height: 2em;
+	line-height: 1.2em;
 	white-space: pre;
 	background: transparent;
 	border: none;
 	vertical-align: inherit;
   padding-left: 0;
-  margin-left: 0;
 }
 
 pre code.language-text {

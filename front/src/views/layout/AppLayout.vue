@@ -80,6 +80,7 @@ export default {
     this.$store.commit('assignAllBlogs', null);
     this.$store.commit('assignTagContent', null);
     this.$store.commit('assignArchive', {});
+    this.$store.commit('assignBlogPost', {});
     this.$store.commit('assignShare', null);
   },
   methods: {

@@ -315,7 +315,8 @@ def remove_tag_cache(tags):
 
 def get_remote_source(repo_md_file):
     raw_url = base_raw_url + repo_url + repo_md_file
-    res = requests.get(raw_url)
+    with requests.Session() as s:
+        res = s.get(raw_url)
     return res.text.strip()
 
 

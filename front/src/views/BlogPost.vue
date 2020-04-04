@@ -2,7 +2,13 @@
   <article class="post">
     <div class="inner">
       <p class="meta">
-        <time :pubdate="blogpost.fields.pub_date" :data-updated="blogpost.fields.last_edit_date" v-text="$options.filters.date(blogpost.fields.pub_date, '%b') +' '+$options.filters.date(blogpost.fields.pub_date, '%d')+ ','+ $options.filters.date(blogpost.fields.pub_date, '%Y') ">
+        <time :pubdate="blogpost.fields.pub_date" >{{$options.filters.date(blogpost.fields.pub_date, '%w')| toWeekDay}},</time>
+        <time :pubdate="blogpost.fields.pub_date" :data-updated="blogpost.fields.last_edit_date"
+              v-text="$options.filters.date(blogpost.fields.pub_date, '%b')+' '+
+              $options.filters.date(blogpost.fields.pub_date, '%d')+ ','+
+              $options.filters.date(blogpost.fields.pub_date, '%Y') + ' at '+
+              $options.filters.date(blogpost.fields.pub_date, '%T')"
+        >
         </time>
       </p>
       <header class="post-header">
@@ -31,7 +37,6 @@
 
 <script>
   import tagItem from './TagItem'
-
   export default {
   name: 'blog-post',
   components: {

@@ -2,7 +2,7 @@
     <div class="inner">
       <section class="credits">
         <span class="credits-theme"><a href="/">Unity of Knowledge and Practice</a> &copy; 2017-{{year}}</span>
-        <span class="credits-software">Published with <a href="http://ghost.org/">Ghost</a></span>
+        <span class="credits-software"> <a href="http://beian.miit.gov.cn" target="_blank">京ICP备20011556号</a></span>
       </section>
     </div>
 </template>
@@ -21,5 +21,4 @@
 </script>
 
 <style scoped>
-
 </style>

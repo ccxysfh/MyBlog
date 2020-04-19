@@ -300,5 +300,22 @@ export default {
 
 > 20200329 优化RSS订阅，初次访问响应延迟，将正文内容添加到  `feed` 的`xml`结构中，参考 [django-feed](https://docs.djangoproject.com/en/3.0/ref/contrib/syndication/) 
 
+> 20200419 谷雨时节，天降一场春雨，实则令人欣喜。今天也发现网页加载的时间实在太长，之前一直以为是网络链路的延时，实则不是。
 
+今天使用chrome的开发工具进行问题排查，发现接口的调用时间仅在200ms左右，由于 ajax 请求的数据达到 1m ，在未进行数据压缩时，Content Download 即数据传输时间平均在7-8s ，慢到令人发指，使用 django 的中间件进行优化：
+```python
+# settings.py add
+MIDDLEWARE_CLASSES = (
+    'django.middleware.gzip.GZipMiddleware',
+)
+
+# views.py add
+
+from django.views.decorators.gzip import gzip_page
+
+@gzip_page
+def viewFunc(request):
+  pass
+
+```
 

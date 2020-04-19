@@ -13,6 +13,7 @@ from django.core.files.base import ContentFile
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.gzip import gzip_page
 from django.urls import reverse
 import redis
 
@@ -34,7 +35,7 @@ try:
 except Exception as e:
     logger.error("connect redis error",e)
 
-
+@gzip_page
 def happy_birthday(request):
     args = dict()
     tag = "HappyBirthday"
@@ -85,7 +86,7 @@ def split_page(args, page):
     args['sl'] = str(3 * (page - 1)) + ':' + str(3 * (page - 1) + 3)
     args['max_page'] = max_page
 
-
+@gzip_page
 def api_allblogs(request, page=''):
     if page and int(page) < 2:  # /0, /1 -> /
         return redirect("/blog/api/allblogs/")
@@ -116,7 +117,7 @@ def get_cache_result_by_key(key):
         logger.info("get cache error")
     return all_blogposts_cache_key, args_str
 
-
+@gzip_page
 def api_tagblog(request, tag, page=''):
     if page and int(page) < 2:  # /0, /1 -> /
         return redirect(reverse('api_tag', kwargs={'tag': tag}))
@@ -136,7 +137,7 @@ def api_tagblog(request, tag, page=''):
         logger.warn("set tag cache fail", e)
     return JsonResponse(args)
 
-
+@gzip_page
 def api_blogpost(request, slug, post_id):
     blogpost_cache_key = generate_cache_key_id("BLOG", post_id)
     args_str =None
@@ -158,7 +159,7 @@ def api_blogpost(request, slug, post_id):
         logger.warn("set blog cache fail", e)
     return JsonResponse(args)
 
-
+@gzip_page
 def api_archive(request):
     blogposts_cache_key, args_str = get_cache_result_by_key("ARCHIVE")
     if args_str:
@@ -197,7 +198,7 @@ def api_archive(request):
 def get_all_blogposts():
     return BlogPost.objects.exclude(title__in=exclude_posts).filter(show=1)
 
-
+@gzip_page
 def api_shares(request):
     the_talks_post = get_object_or_404(BlogPost, title="shares")
     blogpost_json = entire_blogpost(the_talks_post)

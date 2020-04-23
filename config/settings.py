@@ -14,11 +14,7 @@ import os
 import sys
 from time import strftime
 
-
-
 from . import choose_settings
-
-
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
@@ -244,6 +240,7 @@ NOTEBOOK_ARGUMENTS = [
 ]
 CRONJOBS = [
     ('*/15 * * * *', "config.cronjob.trigger_update_blog"),
+    ('59 5,11,17,23 * * *', "config.cronjob.backup_sql"),
 ]
 
 REDIS_HOST = 'localhost'

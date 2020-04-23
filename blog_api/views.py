@@ -2,23 +2,25 @@ import json
 import logging
 import platform
 from collections import defaultdict
-from math import ceil
 from datetime import datetime, timezone
+from math import ceil
 from multiprocessing.dummy import Pool as ThreadPool
 
+import redis
 import requests
-from django.core import serializers
 from django.conf import settings
+from django.core import serializers
 from django.core.files.base import ContentFile
-from django.http import HttpResponse, Http404, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.gzip import gzip_page
-from django.urls import reverse
-import redis
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-from .models import BlogPost
 from .cache import generate_cache_key, generate_cache_key_id
+from .models import BlogPost
 
 exclude_posts = ("shares","Happy Birthday To My Princess",)
 logger = logging.getLogger("myblog.custom")
@@ -316,8 +318,15 @@ def remove_tag_cache(tags):
 
 def get_remote_source(repo_md_file):
     raw_url = base_raw_url + repo_url + repo_md_file
+    status_force = (500, 502, 504)
     with requests.Session() as s:
+        retry = Retry(connect=5, backoff_factor=0.5, status_forcelist=status_force)
+        adapter = HTTPAdapter(max_retries=retry)
+        s.mount('http://', adapter)
+        s.mount('https://', adapter)
         res = s.get(raw_url)
+    if not res.ok:
+        raise Exception("connect refused")
     return res.text.strip()
 
 

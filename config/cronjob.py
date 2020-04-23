@@ -64,8 +64,8 @@ def trigger_update_blog():
                 save_blogpost(blogpost)
                 remove_when_update(blogpost.tags.all(), blogpost.pk)
             except Exception as e:
-                logger.warn("blogpost:{id} update from {remote_source} fail".format(id=blogpost.id,
-                                                                                    remote_source=remote_source))
+                logger.warn("blogpost:{id} update from {remote_source} fail,error detail:{err}"
+                            .format(id=blogpost.id, remote_source=remote_source, err=e))
 
 
 def backup_sql():
@@ -78,4 +78,4 @@ def backup_sql():
 
 
 if __name__ == '__main__':
-    pass
+    trigger_update_blog()

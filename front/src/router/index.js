@@ -3,15 +3,15 @@ import Router from 'vue-router'
 
 
 /* Layout */
-import Layout from '../views/layout/AppLayout'
+const Layout = () => import( '../views/layout/AppLayout')
+const index = () => import( '../views/Index')
+const profile = () => import( '../views/Profile')
+const shares = () => import( '../views/Shares')
+const archive = () => import( '../views/Archive')
+const postDetail = () => import( '../views/PostDetail')
+const tagContent = () => import( '../views/TagContent')
+const birthday = () => import( '../views/HappyBirthday')
 
-import index from '../views/Index'
-import profile from '../views/Profile'
-import shares from '../views/Shares'
-import archive from '../views/Archive'
-import postDetail from '../views/PostDetail'
-import tagContent from '../views/TagContent'
-import birthday from '../views/HappyBirthday'
 
 Vue.use(Router)
 

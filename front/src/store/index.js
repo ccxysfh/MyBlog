@@ -8,7 +8,7 @@ const store = new Vuex.Store({
   state: {
     blogpostsum: 0,
     baseUrl: 'https://changxin10m.com',
-    motto: '',
+    motto: '山川异域，风月同天；山河无恙，人间皆安',
     allBlogs:null,
     tagContent:{},
     blogPost:{},

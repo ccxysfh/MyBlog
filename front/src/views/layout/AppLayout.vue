@@ -16,7 +16,8 @@
           <router-view>
             <div slot="headContent">
               <h1 class="blog-name"><a href="#">0823</a></h1>
-              <span class="blog-description">{{motto}}——how you do anything is how you do everything</span>
+              <span class="blog-description">{{motto}}</span>
+              <span class="blog-description">——how you do anything is how you do everything</span>
             </div>
             <author-info slot="authorInfo"></author-info>
           </router-view>

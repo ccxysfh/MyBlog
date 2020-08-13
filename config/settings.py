@@ -107,11 +107,11 @@ INSTALLED_APPS = [
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'blog_api',
-    'stock_record',
     'taggit',
     'computer_science_flash_cards',
     'django_extensions',
     'django_crontab',
+    'stock_record'
 ]
 
 MIDDLEWARE = [

@@ -63,6 +63,18 @@ add your node_name in choose_settings.py's dev_machines, get node_name:
 >>> platform.node()
 ```
 
+安装数据库/备份还原数据
+
+为数据库 root 用户设置密码
+
+```shell
+sudo mysql_secure_installation
+
+CREATE USER 'blogcx'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON * . * TO 'blogcx'@'localhost';
+FLUSH PRIVILEGES;
+```
+
 
 
 > 在下面提到的更新中，前端改用vue进行重新实现，很久没有学习关于前端的新东西了，因而记录一下vue的学习过程。

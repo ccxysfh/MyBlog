@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Stock(models.Model):
-    stock_code = models.CharField(max_length=150)
+    stock_code = models.CharField(unique=True,max_length=150)
     stock_name = models.CharField(blank=True,max_length=150,default='')
     focus_on = models.BooleanField(blank=False,default=False)
 

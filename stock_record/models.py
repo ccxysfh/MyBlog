@@ -3,9 +3,14 @@ from django.db import models
 # Create your models here.
 
 
+class Stock(models.Model):
+    stock_code = models.CharField(max_length=150)
+    stock_name = models.CharField(blank=True,max_length=150,default='')
+    focus_on = models.BooleanField(blank=False,default=False)
+
 class StockRecord(models.Model):
     stock_code = models.CharField(max_length=150)
-    stock_name = models.TextField(blank=True,default='')
+    stock_name = models.CharField(blank=True,max_length=150,default='')
     status = models.IntegerField('0-intention,1-action', default=1)
     type = models.IntegerField('1-in,2-out', default=2)
     in_price = models.FloatField(blank=True,default=0)
@@ -19,3 +24,10 @@ class StockRecord(models.Model):
     description = models.TextField(blank=True,default='')
     show = models.BooleanField(blank=True,default=True)
     focus_on = models.BooleanField(blank=False,default=False)
+
+    def save(self, *args, **kwargs):
+        if self.stock_name =='':
+            stock = Stock.objects.filter(stock_code=self.stock_code).first()
+            if stock !=None:
+                self.stock_name = stock.stock_name
+        super().save(*args, **kwargs)

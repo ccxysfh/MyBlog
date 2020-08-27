@@ -14,4 +14,4 @@ RUN  cd /data/myblog/front && npm run build
 
 RUN cd /data/myblog &&  python manage.py collectstatic --noinput
 
-CMD ["/data/myblog/deploy.sh"]
+CMD uwsgi --ini /data/myblog/deploy_uwsgi.ini

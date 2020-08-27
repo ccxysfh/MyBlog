@@ -2,22 +2,25 @@ import json
 import logging
 import platform
 from collections import defaultdict
-from math import ceil
 from datetime import datetime, timezone
+from math import ceil
 from multiprocessing.dummy import Pool as ThreadPool
 
-import requests
-from django.core import serializers
-from django.conf import settings
-from django.core.files.base import ContentFile
-from django.http import HttpResponse, Http404, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
-from django.urls import reverse
 import redis
+import requests
+from django.conf import settings
+from django.core import serializers
+from django.core.files.base import ContentFile
+from django.http import JsonResponse
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.gzip import gzip_page
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-from .models import BlogPost
 from .cache import generate_cache_key, generate_cache_key_id
+from .models import BlogPost
 
 exclude_posts = ("shares","Happy Birthday To My Princess",)
 logger = logging.getLogger("myblog.custom")
@@ -34,7 +37,7 @@ try:
 except Exception as e:
     logger.error("connect redis error",e)
 
-
+@gzip_page
 def happy_birthday(request):
     args = dict()
     tag = "HappyBirthday"
@@ -85,7 +88,7 @@ def split_page(args, page):
     args['sl'] = str(3 * (page - 1)) + ':' + str(3 * (page - 1) + 3)
     args['max_page'] = max_page
 
-
+@gzip_page
 def api_allblogs(request, page=''):
     if page and int(page) < 2:  # /0, /1 -> /
         return redirect("/blog/api/allblogs/")
@@ -116,7 +119,7 @@ def get_cache_result_by_key(key):
         logger.info("get cache error")
     return all_blogposts_cache_key, args_str
 
-
+@gzip_page
 def api_tagblog(request, tag, page=''):
     if page and int(page) < 2:  # /0, /1 -> /
         return redirect(reverse('api_tag', kwargs={'tag': tag}))
@@ -136,7 +139,7 @@ def api_tagblog(request, tag, page=''):
         logger.warn("set tag cache fail", e)
     return JsonResponse(args)
 
-
+@gzip_page
 def api_blogpost(request, slug, post_id):
     blogpost_cache_key = generate_cache_key_id("BLOG", post_id)
     args_str =None
@@ -158,7 +161,7 @@ def api_blogpost(request, slug, post_id):
         logger.warn("set blog cache fail", e)
     return JsonResponse(args)
 
-
+@gzip_page
 def api_archive(request):
     blogposts_cache_key, args_str = get_cache_result_by_key("ARCHIVE")
     if args_str:
@@ -197,7 +200,7 @@ def api_archive(request):
 def get_all_blogposts():
     return BlogPost.objects.exclude(title__in=exclude_posts).filter(show=1)
 
-
+@gzip_page
 def api_shares(request):
     the_talks_post = get_object_or_404(BlogPost, title="shares")
     blogpost_json = entire_blogpost(the_talks_post)
@@ -315,7 +318,15 @@ def remove_tag_cache(tags):
 
 def get_remote_source(repo_md_file):
     raw_url = base_raw_url + repo_url + repo_md_file
-    res = requests.get(raw_url)
+    status_force = (500, 502, 504)
+    with requests.Session() as s:
+        retry = Retry(connect=5, backoff_factor=0.5, status_forcelist=status_force)
+        adapter = HTTPAdapter(max_retries=retry)
+        s.mount('http://', adapter)
+        s.mount('https://', adapter)
+        res = s.get(raw_url)
+    if not res.ok:
+        raise Exception("connect refused")
     return res.text.strip()
 
 

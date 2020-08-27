@@ -63,6 +63,18 @@ add your node_name in choose_settings.py's dev_machines, get node_name:
 >>> platform.node()
 ```
 
+安装数据库/备份还原数据
+
+为数据库 root 用户设置密码
+
+```shell
+sudo mysql_secure_installation
+
+CREATE USER 'blogcx'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON * . * TO 'blogcx'@'localhost';
+FLUSH PRIVILEGES;
+```
+
 
 
 > 在下面提到的更新中，前端改用vue进行重新实现，很久没有学习关于前端的新东西了，因而记录一下vue的学习过程。
@@ -141,11 +153,11 @@ use [djangorestframework](https://www.django-rest-framework.org/tutorial/quickst
 
 - 修改配置文件
 
+
+
 **使用[Let's Encrypt](https://letsencrypt.org/getting-started/)生成证书**
 
-[certbot](https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx)
-
-证书文件路径：`/etc/letsencrypt`
+按页面操作生成证书: [certbot](https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx) , 证书生成后，文件路径为：`/etc/letsencrypt` 
 
 
 
@@ -220,11 +232,15 @@ python manage.py crontab remove
 
 加载异常的原因：ajax请求与数据返回是异步的，即发起请求后未等待数据返回就开始渲染组件，此时需要的数据还未初始化，但已执行mathjax渲染过程，导致了最终的公式显示异常。
 
+
+
 期间需要更新npm依赖，需要将个别package更新到更新版本：`npm install {package_name}@latest` or `npm install {package_name}@next`.
 
 如果需要重建工程，为了保持一致性，需要采取和之前一致的方式（不一致可能会出现意料之外的幺蛾子），`vue init webpack front`,vue升级到3.X之后可能会不太一致，请参考[Vue CLI](https://cli.vuejs.org/guide/creating-a-project.html#Pulling%202.x%20Templates%20(Legacy)).
 
 安装chromedriver经常会超时,建议:`npm install chromedriver --chromedriver_cdnurl=http://cdn.npm.taobao.org/dist/chromedriver `.
+
+
 
 > 后续待优化的内容，jarvis命令自动化发布，页面链接及代码等样式的修复问题，vue依赖docker化
 
@@ -281,3 +297,38 @@ export default {
 
 
 > 20200310 迁移国内云
+
+> 20200319-20200329 域名指向国内云服务器需要备案，否则云商会拦截访问，暂时使用新域名changxin10m.cn
+
+> 20200314-20200329 进行多项功能更新，主要是增加客户端缓存，降低访问延迟，牺牲一定的一致性，保证高可用性
+
+- 服务端并行处理优化，目前从访问时间来看，少量的数据并行处理带来的开销和并行化带来的速度提升似乎相互抵消了
+- profile头像居中优化， 优化 `title` 与正文间隔
+- 增加服务端tag缓存
+- 优化博客内引用代码样式，文章展示由 `markdown` 格式转 `html` 格式，使用 [pagments-css](https://github.com/richleland/pygments-css) 
+- 服务端缓存及并行优化后，访问延迟依然很大，遂决定增加客户端缓存，牺牲一定的一致性，保证高可用性，使用 `vuex` 进行客户端缓存，`vuex`是基于内存缓存，页面刷新时，内存中缓存也被刷新，即缓存的作用范围与页面刷新保持一致，后续可能会考虑一定的本地持久化
+
+
+
+> 20200329 优化RSS订阅，初次访问响应延迟，将正文内容添加到  `feed` 的`xml`结构中，参考 [django-feed](https://docs.djangoproject.com/en/3.0/ref/contrib/syndication/) 
+
+> 20200419 谷雨时节，天降一场春雨，实则令人欣喜。今天也发现网页加载的时间实在太长，之前一直以为是网络链路的延时，实则不是。
+
+今天使用chrome的开发工具进行问题排查，发现接口的调用时间仅在200ms左右，由于 ajax 请求的数据达到 1m ，在未进行数据压缩时，Content Download 即数据传输时间平均在7-8s ，慢到令人发指，使用 django 的中间件进行优化：
+```python
+# settings.py add
+MIDDLEWARE_CLASSES = (
+    'django.middleware.gzip.GZipMiddleware',
+)
+
+# views.py add
+
+from django.views.decorators.gzip import gzip_page
+
+@gzip_page
+def viewFunc(request):
+  pass
+
+```
+
+> 20200827 项目部署 docker 化

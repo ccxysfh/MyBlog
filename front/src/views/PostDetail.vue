@@ -43,14 +43,33 @@ export default {
       let url = this.$route.params.url;
       let pk = this.getPk(url);
       let allBlogCache = this.$store.state.allBlogs;
-      var bloglist = allBlogCache.blogposts;
-      for (var blog of bloglist){
-        if (blog.pk === pk){
-          this.blogpost = blog;
-          console.log("load blog detail cache");
-          break
+      let blogPostCache = this.$store.state.blogPost;
+      if(allBlogCache !=null){
+        var bloglist = allBlogCache.blogposts;
+        for (var blog of bloglist){
+          if (blog.pk === pk){
+            this.blogpost = blog;
+            console.log("load blog detail from all cache");
+            break
+          }
+        }
+      }else{
+        let blogPostCacheLocal = null;
+        try{
+          blogPostCacheLocal = JSON.parse(window.localStorage.getItem('blogPost'));}
+        catch (e) {
+          console.log(e)
+        }
+        if(blogPostCacheLocal !=null && pk in blogPostCacheLocal){
+          this.$store.commit('assignBlogPost', blogPostCacheLocal);
+          this.blogpost = blogPostCacheLocal[pk];
+          console.log("load blog detail from local single cache");
+        }else if( pk in blogPostCache ){
+          this.blogpost = blogPostCache[pk];
+          console.log("load blog detail from single cache");
         }
       }
+
       if(this.blogpost == null){
         let reqUrl = this.$store.state.baseUrl + url;
         console.log(reqUrl);
@@ -59,6 +78,8 @@ export default {
             .then((response) => {
               var res = JSON.parse(response.bodyText);
               self.blogpost = res.blogpost;
+              blogPostCache[pk] = res.blogpost;
+              this.$store.commit('assignBlogPost', blogPostCache);
               console.log(self.blogpost)
             })
       }

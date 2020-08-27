@@ -14,11 +14,7 @@ import os
 import sys
 from time import strftime
 
-
-
 from . import choose_settings
-
-
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
@@ -115,9 +111,11 @@ INSTALLED_APPS = [
     'computer_science_flash_cards',
     'django_extensions',
     'django_crontab',
+    'stock_record'
 ]
 
 MIDDLEWARE = [
+    'django.middleware.gzip.GZipMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -243,6 +241,7 @@ NOTEBOOK_ARGUMENTS = [
 ]
 CRONJOBS = [
     ('*/15 * * * *', "config.cronjob.trigger_update_blog"),
+    ('59 5,11,17,23 * * *', "config.cronjob.backup_sql"),
 ]
 
 REDIS_HOST = 'localhost'

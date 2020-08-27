@@ -102,3 +102,11 @@ export function html2Text (val) {
 export function toThousandslsFilter (num) {
   return (+num || 0).toString().replace(/^-?\d+/g, m => m.replace(/(?=(?!\b)(\d{3})+$)/g, ','))
 }
+
+export function toWeekDay(num){
+  let weekList = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  if(num <7){
+    return weekList[num]
+  }
+  return weekList[num%7];
+}

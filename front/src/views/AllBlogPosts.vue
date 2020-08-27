@@ -92,9 +92,12 @@
         this.initControl(blogsSplitByPage);
         console.log("find all blogs cache");
       }else{
+        const start = Date.now();
         let reqUrl = this.$store.state.baseUrl + '/blog/api/allblogs/' + page;
         await this.$http.get(reqUrl)
           .then((response) => {
+            const millis = Date.now() - start;
+            console.log(`seconds elapsed = ${Math.floor(millis / 1000)}`);
             var res = JSON.parse(response.bodyText);
             console.log("get all");
             this.$store.commit('assignAllBlogs', res);

@@ -687,7 +687,7 @@ img {
 	display: block;
 	max-width: 100%;
 	height: auto;
-	margin: 0 0 2em
+	margin: 0 auto
 }
 
 img[src$="#full"] {

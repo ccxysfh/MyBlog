@@ -15,7 +15,7 @@ RUN cd /data/myblog && pip install -i https://mirrors.aliyun.com/pypi/simple -r 
 
 RUN  cd /data/myblog/front && npm run build
 
-
+RUN apt-get install -y redis-server
 
 RUN cd /data/myblog &&  python manage.py collectstatic --noinput
 

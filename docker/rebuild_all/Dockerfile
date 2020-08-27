@@ -17,6 +17,6 @@ RUN /bin/bash -c "apt-get update  \
     && apt-get install -y  nodejs \
     && apt-get install -y npm "
 RUN /bin/bash -c "cd /data/myblog/front\
-    &&npm config set registry https://registry.npm.taobao.org \
+    && npm config set registry https://registry.npm.taobao.org \
     && npm cache verify \
     && npm install chromedriver --chromedriver_cdnurl=http://cdn.npm.taobao.org/dist/chromedriver"

@@ -53,7 +53,7 @@ else:
             'NAME': 'blogcx',
             'USER': 'blogcx',
             'PASSWORD': '789012',
-            'HOST': 'localhost',
+            'HOST': '172.17.0.1',
             'PORT': '3306',
         }
     }

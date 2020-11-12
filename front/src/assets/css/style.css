@@ -458,7 +458,7 @@ ul>li:before,ol>li:before {
 	font-family: 'Fira Sans', sans-serif;
 	font-size: 1em;
 	font-weight: 500;
-	line-height: 1.5em;
+  line-height: 2em;
 	text-align: right;
 	color: #000
 }

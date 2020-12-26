@@ -3,6 +3,7 @@ from django.urls import path
 from blog_api import feeds
 from . import views
 
+
 urlpatterns = [
     path('feed', feeds.LatestBlogpostsFeed()),
     path('api/happy_birthday_to_my_princess_huyao', views.happy_birthday),
@@ -15,6 +16,7 @@ urlpatterns = [
     path('api/shares', views.api_shares, name='api_shares'),
     path('api/save', views.api_blog_save, name='api_save'),
     path('api/trigger', views.api_blog_trigger, name='api_trigger'),
+    path('api/trigger-auto', views.trigger_auto, name='api_trigger_auto'),
     path('api/update-properties-source', views.update_blog_properties_source, name='api_update_properties_source'),
     path('api/update-properties-pk', views.update_blog_properties_pk, name='api_update_properties_pk'),
 ]

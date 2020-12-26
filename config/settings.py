@@ -240,7 +240,6 @@ NOTEBOOK_ARGUMENTS = [
     '--port', '9101',
 ]
 CRONJOBS = [
-    ('*/15 * * * *', "config.cronjob.trigger_update_blog"),
     ('59 5,11,17,23 * * *', "config.cronjob.backup_sql"),
 ]
 

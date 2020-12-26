@@ -1,0 +1,20 @@
+name: Trigger Auto
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  trigger:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: trigger
+      run: |
+        curl changxin10m.com/blog/api/rigger-auto

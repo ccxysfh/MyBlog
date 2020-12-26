@@ -296,6 +296,27 @@ def api_blog_trigger(request):
         return JsonResponse(args)
 
 
+
+def trigger_auto(request):
+    args = dict()
+    trigger_update_blog()
+    args["result"] = "success"
+    return JsonResponse(args)
+
+
+def trigger_update_blog():
+    blogposts = BlogPost.objects.all()
+    for blogpost in blogposts:
+        remote_source = blogpost.remote_source
+        if remote_source is not None and remote_source != "":
+            try:
+                blogpost.body = get_remote_source(remote_source)
+                save_blogpost(blogpost)
+                remove_when_update(blogpost.tags.all(), blogpost.pk)
+            except Exception as e:
+                logger.warn("blogpost:{id} update from {remote_source} fail,error detail:{err}"
+                            .format(id=blogpost.id, remote_source=remote_source, err=e))
+
 def remove_when_update(tags, post_id):
     try:
         all_blogposts_cache_key = generate_cache_key("ALL")
@@ -411,3 +432,4 @@ def save_blogpost(obj):
             obj.md_file.save(filename + '.md', ContentFile(obj.body), save=False)
             obj.md_file.close()
     obj.save()
+

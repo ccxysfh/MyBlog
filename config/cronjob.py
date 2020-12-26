@@ -14,10 +14,6 @@ import requests
 from django.conf import settings
 from lxml import html
 
-from blog_api.models import BlogPost
-from blog_api.views import get_remote_source, save_blogpost, remove_when_update
-from config.settings import logger
-
 PROJECT_DIR = settings.BASE_DIR
 LOG_PATH = os.path.join(PROJECT_DIR, 'sql')
 
@@ -54,20 +50,6 @@ def get_raw_mds(md_files):
     return list(map(raw_url, md_files))
 
 
-def trigger_update_blog():
-    blogposts = BlogPost.objects.all()
-    for blogpost in blogposts:
-        remote_source = blogpost.remote_source
-        if remote_source is not None and remote_source != "":
-            try:
-                blogpost.body = get_remote_source(remote_source)
-                save_blogpost(blogpost)
-                remove_when_update(blogpost.tags.all(), blogpost.pk)
-            except Exception as e:
-                logger.warn("blogpost:{id} update from {remote_source} fail,error detail:{err}"
-                            .format(id=blogpost.id, remote_source=remote_source, err=e))
-
-
 def backup_sql():
     cmd_pattern = 'mysqldump -ublogcx -p789012 blogcx > {dir}/blogcx{time_str}.sql'
     dir_name = os.path.join(LOG_PATH, strftime('%Y%m'))
@@ -78,4 +60,4 @@ def backup_sql():
 
 
 if __name__ == '__main__':
-    trigger_update_blog()
+    pass

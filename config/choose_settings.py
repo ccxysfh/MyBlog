@@ -16,8 +16,9 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 node = platform.node()
+print(node)
 
-dev_machines = ('cheng-cx', 'chengcx', 'chengcx.local', 'cheng-cx.local')
+dev_machines = ('cheng-cx', 'chengcx', 'chengcx.local', 'cheng-cx.local','Changxins-MacBook-Pro.local')
 
 if node in dev_machines:
     print('Debug')
@@ -31,7 +32,7 @@ if node in dev_machines:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'blogcx',
             'USER': 'root',
-            'PASSWORD': '123456',
+            'PASSWORD': '789012',
             'host': 'localhost',
             'PORT': '3306',
         }

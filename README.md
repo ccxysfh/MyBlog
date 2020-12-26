@@ -331,4 +331,8 @@ def viewFunc(request):
 
 ```
 
-> 20200827 项目部署 docker 化
+> 20201226 文章更新轮询变更为推送触发机制
+结合 github 的 workflow ，监听 push 事件
+增加异步队列，异步处理更新任务，查看详情 `celery -A config worker -l INFO`
+
+> 注意，uwsgi 的配置项 home 需要为实际 python 虚拟环境 bin 的上一级目录

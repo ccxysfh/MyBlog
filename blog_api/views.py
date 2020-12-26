@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from math import ceil
 from multiprocessing.dummy import Pool as ThreadPool
 
+from celery import shared_task
 import redis
 import requests
 from django.conf import settings
@@ -21,6 +22,8 @@ from urllib3.util.retry import Retry
 
 from .cache import generate_cache_key, generate_cache_key_id
 from .models import BlogPost
+
+seconds_of_day = 24 * 60 * 60
 
 exclude_posts = ("shares","Happy Birthday To My Princess",)
 logger = logging.getLogger("myblog.custom")
@@ -104,7 +107,7 @@ def api_allblogs(request, page=''):
     args_generator(args, blogposts)
     split_page(args, page)
     try:
-        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False), ex=seconds_of_day)
     except Exception as e:
         logger.warn("set tag cache fail", e)
     return JsonResponse(args)
@@ -134,7 +137,7 @@ def api_tagblog(request, tag, page=''):
     args_generator(args, blogposts)
     split_page(args, page)
     try:
-        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False),ex=seconds_of_day)
     except Exception as e:
         logger.warn("set tag cache fail", e)
     return JsonResponse(args)
@@ -156,7 +159,7 @@ def api_blogpost(request, slug, post_id):
 
     args = {'blogpost': blogpost_json}
     try:
-        cache.set(blogpost_cache_key, json.dumps(args, ensure_ascii=False))
+        cache.set(blogpost_cache_key, json.dumps(args, ensure_ascii=False),ex=seconds_of_day)
     except Exception as e:
         logger.warn("set blog cache fail", e)
     return JsonResponse(args)
@@ -189,7 +192,7 @@ def api_archive(request):
     ]
 
     try:
-        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False))
+        cache.set(blogposts_cache_key, json.dumps(args, ensure_ascii=False),ex=seconds_of_day)
     except Exception as e:
         logger.warn("set archive cache fail", e)
 
@@ -295,16 +298,16 @@ def api_blog_trigger(request):
             args["desc"] = "no such blog with remote source {repo_md_file}".format(repo_md_file=repo_md_file)
         return JsonResponse(args)
 
-
-
 def trigger_auto(request):
     args = dict()
-    trigger_update_blog()
+    trigger_update_blog.delay()
     args["result"] = "success"
     return JsonResponse(args)
 
 
+@shared_task
 def trigger_update_blog():
+    logger.info("start")
     blogposts = BlogPost.objects.all()
     for blogpost in blogposts:
         remote_source = blogpost.remote_source
@@ -316,6 +319,7 @@ def trigger_update_blog():
             except Exception as e:
                 logger.warn("blogpost:{id} update from {remote_source} fail,error detail:{err}"
                             .format(id=blogpost.id, remote_source=remote_source, err=e))
+    return True
 
 def remove_when_update(tags, post_id):
     try:

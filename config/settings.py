@@ -61,7 +61,8 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_PATH, "info{time_str}.log".format(time_str=strftime('%Y%m%d%H')))
+            'filename': os.path.join(LOG_PATH, "info{time_str}.log".format(time_str=strftime('%Y%m%d%H'))),
+            'formatter': 'verbose'
         },
     },
     'loggers': {
@@ -245,3 +246,11 @@ CRONJOBS = [
 
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
+
+# Celery Configuration Options
+# CELERY STUFF
+BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

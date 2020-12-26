@@ -17,3 +17,4 @@ django-crontab
 lxml
 sentry-sdk==0.9.5
 redis
+celery=5.0.5

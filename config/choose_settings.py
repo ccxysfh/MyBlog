@@ -47,7 +47,7 @@ else:
     )
     SECURE_SSL_REDIRECT = True
 
-    DEBUG =True 
+    DEBUG =False
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',

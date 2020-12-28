@@ -345,7 +345,7 @@ def get_remote_source(repo_md_file):
     raw_url = base_raw_url + repo_url + repo_md_file
     status_force = (500, 502, 504)
     with requests.Session() as s:
-        retry = Retry(connect=5, backoff_factor=0.5, status_forcelist=status_force)
+        retry = Retry(total=2, connect=2, backoff_factor=0.5, status_forcelist=status_force)
         adapter = HTTPAdapter(max_retries=retry)
         s.mount('http://', adapter)
         s.mount('https://', adapter)
